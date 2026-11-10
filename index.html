@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="description" content="Apex Dusk: a 3D driving game with time attack and AI races, three tracks, three cars, fuel, tire wear and pit stops.">
 <style>[hidden]{display:none!important} body{margin:0} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <title>Apex Dusk</title>
@@ -728,6 +729,19 @@ window.__apexBoot = function () {
     cl.remove('ctl-pad'); cl.remove('ctl-arrows'); cl.remove('ctl-tilt');
     cl.add('ctl-' + v);
     if (v === 'tilt' && !quiet && !tilt.ok) enableTilt();
+  }
+  function requestLandscape() {
+    if (!isTouch || !screen.orientation || typeof screen.orientation.lock !== 'function') return;
+    function lock() {
+      screen.orientation.lock('landscape').catch(function () {});
+    }
+    if (document.fullscreenElement) {
+      lock();
+    } else if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().then(lock).catch(function () {});
+    } else {
+      lock();
+    }
   }
   wireSeg('gfxSeg', setQuality);
   wireSeg('ctrlSeg', function (v) { setCtrl(v, false); });
@@ -1723,6 +1737,7 @@ window.__apexBoot = function () {
   Array.prototype.forEach.call(document.querySelectorAll('.back'), function (b) { b.addEventListener('click', back); });
 
   function startRun() {
+    requestLandscape();
     if (!audio) initAudio();
     if (audio && audio.ctx.state === 'suspended') { try { audio.ctx.resume(); } catch (e) {} }
     cur = CARS[sel];
