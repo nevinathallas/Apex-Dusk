@@ -299,6 +299,69 @@
   .seg button:focus-visible { outline: 3px solid var(--ink); outline-offset: -3px; }
   .seg-note { font-size: 11px; color: var(--ink-dim); min-height: 1.4em; }
 
+  [hidden] { display: none !important; }
+
+  /* ---------- menu screens ---------- */
+  .screen { display: flex; flex-direction: column; min-width: 0; }
+  .menu { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin: 4px 0 0; max-width: 400px; }
+  .menu-btn {
+    font-family: var(--display); font-weight: 800; font-size: 28px; line-height: 1; letter-spacing: 0.03em; text-transform: uppercase;
+    color: var(--ink); text-align: left; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--line);
+    border-radius: 4px; padding: 11px 16px 12px; cursor: pointer; pointer-events: auto; touch-action: manipulation;
+    display: flex; flex-direction: column; gap: 5px; transition: border-color 0.12s, background-color 0.12s;
+  }
+  .menu-btn small { font-family: var(--mono); font-weight: 400; font-size: 11px; line-height: 1.3; letter-spacing: 0.04em; text-transform: none; color: var(--ink-dim); }
+  .menu-btn:hover:not(:disabled), .menu-btn:focus-visible { border-left-color: var(--accent); background: rgba(52, 48, 92, 0.82); }
+  .menu-btn:focus-visible, .text-in:focus-visible, .stepper button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .menu-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .menu-btn.minor { font-size: 21px; padding: 10px 16px; }
+  .scr-head { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+  .scr-head h2 { font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: clamp(34px, 7vw, 54px); line-height: 0.9; margin: 0; }
+  .scr-head .label { display: block; margin-bottom: 5px; }
+  .back { min-height: 40px; padding: 0 14px; color: var(--ink); }
+  .settings-col { flex-direction: column; gap: 14px; }
+  .howto.first { margin-top: 0; margin-bottom: 16px; }
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .text-in {
+    font: inherit; font-size: 16px; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+    padding: 0 12px; height: 46px; width: 100%; max-width: 240px; pointer-events: auto; touch-action: manipulation;
+    -webkit-user-select: text; user-select: text;
+  }
+  .text-in::placeholder { color: var(--ink-dim); opacity: 0.6; }
+  .code-in { text-transform: uppercase; letter-spacing: 0.3em; max-width: 132px; font-weight: 500; }
+  .or { margin: 16px 0 8px; }
+  .join-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .go-alt { background: var(--ink); }
+  .net-msg { min-height: 1.5em; margin: 12px 0 0; font-size: 13px; line-height: 1.5; color: var(--ink-dim); max-width: 50ch; }
+  .net-msg.bad { color: var(--crit); }
+  .room-code { color: var(--accent); letter-spacing: 0.08em; -webkit-user-select: text; user-select: text; }
+  .lobby-list { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 6px; max-width: 440px; }
+  .lobby-list li {
+    display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 10px; align-items: center;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px; font-size: 13px;
+  }
+  .lobby-list li i { width: 12px; height: 12px; border-radius: 2px; }
+  .lobby-list li span:last-child { color: var(--ink-dim); font-size: 12px; }
+  .lobby-list li.empty { color: var(--ink-dim); border-style: dashed; background: transparent; }
+  .stepper { display: inline-flex; align-items: stretch; align-self: flex-start; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--panel); }
+  .stepper button {
+    font: inherit; font-size: 14px; color: var(--ink); background: transparent; border: 0; width: 46px; min-height: 42px;
+    cursor: pointer; pointer-events: auto; touch-action: manipulation;
+  }
+  .stepper button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .stepper span {
+    min-width: 150px; display: grid; place-items: center; padding: 0 10px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+  }
+  .pause-btns { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  @media (max-height: 460px) {
+    .menu { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 600px; }
+    .menu-btn { font-size: 22px; padding: 8px 12px 9px; }
+    .menu-btn.minor { font-size: 18px; padding: 8px 12px; }
+    .scr-head { margin-bottom: 10px; }
+    .settings-col { flex-direction: row; }
+  }
+
   @media (max-width: 560px) {
     #map { width: 104px; height: 104px; }
     .lap-panel { width: 168px; padding: 8px 12px 10px; }
@@ -339,7 +402,7 @@
   <div class="side">
     <canvas id="map" width="150" height="150" aria-label="Track map"></canvas>
     <div class="side-btns">
-      <button class="small-btn" id="garage" type="button">Menu</button>
+      <button class="small-btn" id="garage" type="button">Pause</button>
       <button class="small-btn" id="mute" type="button">Sound on</button>
       <button class="small-btn" id="gfx" type="button">Graphics: High</button>
     </div>
@@ -352,7 +415,7 @@
   </div>
   <div class="keys-hint">
     <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrows to drive</div>
-    <div><kbd>Space</kbd> handbrake &nbsp; <kbd>R</kbd> back to track</div>
+    <div><kbd>Space</kbd> handbrake &nbsp; <kbd>R</kbd> back to track &nbsp; <kbd>Esc</kbd> pause</div>
   </div>
   <div class="center-msg"><div id="count">3</div></div>
   <div id="toast"></div>
@@ -368,6 +431,15 @@
     <div class="result-btns">
       <button class="go" id="again" type="button">Race again</button>
       <button class="small-btn" id="resMenu" type="button">Menu</button>
+    </div>
+  </div>
+  <div class="result" id="pause" hidden>
+    <div class="label" id="pauseNote">Game paused</div>
+    <h2>Paused</h2>
+    <div class="pause-btns">
+      <button class="go" id="pResume" type="button">Resume</button>
+      <button class="small-btn back-like" id="pRestart" type="button">Restart</button>
+      <button class="small-btn back-like" id="pQuit" type="button">Quit to menu</button>
     </div>
   </div>
   <div class="notice" id="warn" hidden>Out of fuel. Coast into the pit box, or press <span class="kb">R</span> for a tow</div>
@@ -387,86 +459,179 @@
 
 <div class="intro gutter" id="intro">
   <div class="intro-inner">
-    <h1>Apex <span>Dusk</span></h1>
-    <p class="lede">Hot-lap three circuits against the clock, or race three rivals. Fuel burns and tires wear, so pick your car and plan when to pit.</p>
-    <div class="settings">
-      <div class="seg-wrap">
-        <div class="label">Mode</div>
-        <div class="seg" id="modeSeg" role="group" aria-label="Game mode">
-          <button type="button" id="mode-time" data-v="time">Time attack</button>
-          <button type="button" id="mode-race" data-v="race">Race</button>
-        </div>
-        <div class="seg-note" id="modeNote"></div>
+
+    <section class="screen" id="scr-main">
+      <h1>Apex <span>Dusk</span></h1>
+      <p class="lede">Three circuits, three cars. Fuel burns and tires wear, so plan when to pit.</p>
+      <div id="loading">Loading the 3D engine…</div>
+      <p id="errmsg" hidden></p>
+      <nav class="menu" aria-label="Main menu">
+        <button class="menu-btn" id="m-time" type="button" disabled>Time attack<small>You against the clock. Best laps are saved.</small></button>
+        <button class="menu-btn" id="m-race" type="button" disabled>Race<small>Three laps against three AI rivals.</small></button>
+        <button class="menu-btn" id="m-online" type="button" disabled>Online race<small>Up to 4 players with a room code.</small></button>
+        <button class="menu-btn minor" id="m-settings" type="button">Settings</button>
+        <button class="menu-btn minor" id="m-help" type="button">How to play</button>
+      </nav>
+      <p class="rotate-hint">Turn your phone sideways for a wider view.</p>
+      <p class="credit">Built by <span id="credit">Your Name</span> with Three.js and plain JavaScript.</p>
+    </section>
+
+    <section class="screen" id="scr-track" hidden>
+      <div class="scr-head">
+        <button class="small-btn back" type="button">&larr; Back</button>
+        <div><span class="label" id="trackStep">Time attack · Step 1 of 2</span><h2>Choose track</h2></div>
       </div>
-      <div class="seg-wrap" id="aiWrap">
-        <div class="label">Rivals</div>
-        <div class="seg" id="aiSeg" role="group" aria-label="Rival difficulty">
-          <button type="button" id="ai-easy" data-v="easy">Easy</button>
-          <button type="button" id="ai-normal" data-v="normal">Normal</button>
-          <button type="button" id="ai-hard" data-v="hard">Hard</button>
+      <div class="picks" id="tracks" role="group" aria-label="Choose a track"></div>
+      <div class="settings" id="aiWrap">
+        <div class="seg-wrap">
+          <div class="label">Rivals</div>
+          <div class="seg" id="aiSeg" role="group" aria-label="Rival difficulty">
+            <button type="button" id="ai-easy" data-v="easy">Easy</button>
+            <button type="button" id="ai-normal" data-v="normal">Normal</button>
+            <button type="button" id="ai-hard" data-v="hard">Hard</button>
+          </div>
+          <div class="seg-note" id="aiNote"></div>
         </div>
-        <div class="seg-note" id="aiNote"></div>
       </div>
-    </div>
-    <div class="label pick-label">Track</div>
-    <div class="picks" id="tracks" role="group" aria-label="Choose a track"></div>
-    <div class="label pick-label">Car</div>
-    <div class="picks" id="cars" role="group" aria-label="Choose a car"></div>
-    <div class="settings">
-      <div class="seg-wrap">
-        <div class="label">Graphics</div>
-        <div class="seg" id="gfxSeg" role="group" aria-label="Graphics detail">
-          <button type="button" id="gfx-low" data-v="low">Low</button>
-          <button type="button" id="gfx-medium" data-v="medium">Medium</button>
-          <button type="button" id="gfx-high" data-v="high">High</button>
+      <div class="run-row">
+        <button class="go" id="trackNext" type="button">Next: car</button>
+      </div>
+    </section>
+
+    <section class="screen" id="scr-car" hidden>
+      <div class="scr-head">
+        <button class="small-btn back" type="button">&larr; Back</button>
+        <div><span class="label" id="carStep">Time attack · Step 2 of 2</span><h2>Choose car</h2></div>
+      </div>
+      <div class="picks" id="cars" role="group" aria-label="Choose a car"></div>
+      <div class="run-row">
+        <button class="go" id="go" type="button">Start engine</button>
+        <div class="label stat-inline" id="bestWrap">Best lap<b id="statBest">--:--.---</b></div>
+      </div>
+    </section>
+
+    <section class="screen" id="scr-settings" hidden>
+      <div class="scr-head">
+        <button class="small-btn back" type="button">&larr; Back</button>
+        <div><h2>Settings</h2></div>
+      </div>
+      <div class="settings settings-col">
+        <div class="seg-wrap">
+          <div class="label">Graphics</div>
+          <div class="seg" id="gfxSeg" role="group" aria-label="Graphics detail">
+            <button type="button" id="gfx-low" data-v="low">Low</button>
+            <button type="button" id="gfx-medium" data-v="medium">Medium</button>
+            <button type="button" id="gfx-high" data-v="high">High</button>
+          </div>
+          <div class="seg-note" id="gfxNote"></div>
         </div>
-        <div class="seg-note" id="gfxNote"></div>
-      </div>
-      <div class="seg-wrap">
-        <div class="label">Frame rate limit</div>
-        <div class="seg" id="fpsSeg" role="group" aria-label="Frame rate limit">
-          <button type="button" id="fps-30" data-v="30">30</button>
-          <button type="button" id="fps-60" data-v="60">60</button>
-          <button type="button" id="fps-max" data-v="max">Max</button>
+        <div class="seg-wrap">
+          <div class="label">Frame rate limit</div>
+          <div class="seg" id="fpsSeg" role="group" aria-label="Frame rate limit">
+            <button type="button" id="fps-30" data-v="30">30</button>
+            <button type="button" id="fps-60" data-v="60">60</button>
+            <button type="button" id="fps-max" data-v="max">Max</button>
+          </div>
+          <div class="seg-note" id="fpsNote"></div>
         </div>
-        <div class="seg-note" id="fpsNote"></div>
-      </div>
-      <div class="seg-wrap">
-        <div class="label">FPS counter</div>
-        <div class="seg" id="fpsShowSeg" role="group" aria-label="Show FPS counter">
-          <button type="button" id="fpsshow-off" data-v="off">Off</button>
-          <button type="button" id="fpsshow-on" data-v="on">On</button>
+        <div class="seg-wrap">
+          <div class="label">FPS counter</div>
+          <div class="seg" id="fpsShowSeg" role="group" aria-label="Show FPS counter">
+            <button type="button" id="fpsshow-off" data-v="off">Off</button>
+            <button type="button" id="fpsshow-on" data-v="on">On</button>
+          </div>
+          <div class="seg-note">Shown under the map while you drive.</div>
         </div>
-        <div class="seg-note"></div>
-      </div>
-      <div class="seg-wrap touch-only">
-        <div class="label">Phone controls</div>
-        <div class="seg" id="ctrlSeg" role="group" aria-label="Phone controller type">
-          <button type="button" id="ctrl-pad" data-v="pad">Pad</button>
-          <button type="button" id="ctrl-arrows" data-v="arrows">Arrows</button>
-          <button type="button" id="ctrl-tilt" data-v="tilt">Tilt</button>
+        <div class="seg-wrap">
+          <div class="label">Sound</div>
+          <div class="seg" id="soundSeg" role="group" aria-label="Sound">
+            <button type="button" id="sound-off" data-v="off">Off</button>
+            <button type="button" id="sound-on" data-v="on">On</button>
+          </div>
+          <div class="seg-note">Engine and wind.</div>
         </div>
-        <div class="seg-note" id="ctrlNote"></div>
+        <div class="seg-wrap touch-only">
+          <div class="label">Phone controls</div>
+          <div class="seg" id="ctrlSeg" role="group" aria-label="Phone controller type">
+            <button type="button" id="ctrl-pad" data-v="pad">Pad</button>
+            <button type="button" id="ctrl-arrows" data-v="arrows">Arrows</button>
+            <button type="button" id="ctrl-tilt" data-v="tilt">Tilt</button>
+          </div>
+          <div class="seg-note" id="ctrlNote"></div>
+        </div>
       </div>
-    </div>
-    <div class="run-row">
-      <button class="go" id="go" type="button" disabled>Start engine</button>
-      <div class="label stat-inline">Best lap<b id="statBest">--:--.---</b></div>
-    </div>
-    <div id="loading">Loading the 3D engine…</div>
-    <p id="errmsg" hidden></p>
-    <p class="rotate-hint">Turn your phone sideways for a wider view.</p>
-    <p class="howto">Low on fuel or tires? Drive into the <b>yellow pit box</b> beside the start straight and stop. The crew refuels you and fits new tires while the lap clock keeps running.</p>
-    <dl class="controls">
-      <dt>W / &uarr;</dt><dd>Throttle</dd>
-      <dt>S / &darr;</dt><dd>Brake, then reverse</dd>
-      <dt>A D / &larr; &rarr;</dt><dd>Steer</dd>
-      <dt>Space</dt><dd>Handbrake, for drifting</dd>
-      <dt>R</dt><dd>Back to the track, or a tow to the pits when out of fuel</dd>
-      <dt>M / Esc</dt><dd>Sound on or off / back to this menu</dd>
-    </dl>
-    <p class="howto touch-only">Left thumb steers, in the style you pick under <b>Phone controls</b>. Right thumb: <b>GAS</b>, <b>BRAKE</b> and <b>DRIFT</b>. The &#8634; button puts you back on track.</p>
-    <p class="credit">Built by <span id="credit">Your Name</span> with Three.js and plain JavaScript.</p>
+    </section>
+
+    <section class="screen" id="scr-help" hidden>
+      <div class="scr-head">
+        <button class="small-btn back" type="button">&larr; Back</button>
+        <div><h2>How to play</h2></div>
+      </div>
+      <p class="howto">Low on fuel or tires? Drive into the <b>yellow pit box</b> beside the start straight and stop. The crew refuels you and fits new tires while the clock keeps running.</p>
+      <p class="howto">In <b>Race</b> and <b>Online race</b> you run three laps, and fuel and tires last twice as long.</p>
+      <dl class="controls">
+        <dt>W / &uarr;</dt><dd>Throttle</dd>
+        <dt>S / &darr;</dt><dd>Brake, then reverse</dd>
+        <dt>A D / &larr; &rarr;</dt><dd>Steer</dd>
+        <dt>Space</dt><dd>Handbrake, for drifting</dd>
+        <dt>R</dt><dd>Back to the track, or a tow to the pits when out of fuel</dd>
+        <dt>M</dt><dd>Sound on or off</dd>
+        <dt>Esc</dt><dd>Pause</dd>
+      </dl>
+      <p class="howto touch-only">Left thumb steers, in the style you pick under Settings, <b>Phone controls</b>. Right thumb: <b>GAS</b>, <b>BRAKE</b> and <b>DRIFT</b>. The &#8634; button puts you back on track.</p>
+    </section>
+
+    <section class="screen" id="scr-online" hidden>
+      <div class="scr-head">
+        <button class="small-btn back" type="button">&larr; Back</button>
+        <div><span class="label">Up to 4 players</span><h2>Online race</h2></div>
+      </div>
+      <p class="howto first">One player creates a room and shares its 4-letter code. The others join with that code. Cars pass through each other online.</p>
+      <label class="field"><span class="label">Your name</span>
+        <input class="text-in" id="netName" type="text" maxlength="12" autocomplete="off" autocapitalize="words" spellcheck="false">
+      </label>
+      <div class="run-row">
+        <button class="go" id="netCreate" type="button">Create room</button>
+      </div>
+      <div class="label or">Or join a friend</div>
+      <div class="join-row">
+        <input class="text-in code-in" id="netCode" type="text" maxlength="4" placeholder="CODE" aria-label="Room code" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <button class="go go-alt" id="netJoin" type="button">Join room</button>
+      </div>
+      <p class="net-msg" id="netMsg" role="status"></p>
+    </section>
+
+    <section class="screen" id="scr-lobby" hidden>
+      <div class="scr-head">
+        <button class="small-btn back" type="button">&larr; Leave</button>
+        <div><span class="label">Room code</span><h2><span class="room-code" id="roomCode">----</span></h2></div>
+        <button class="small-btn" id="roomCopy" type="button">Copy code</button>
+      </div>
+      <ol class="lobby-list" id="lobbyList" aria-label="Players in this room"></ol>
+      <div class="settings">
+        <div class="seg-wrap">
+          <div class="label">Track <span id="lobTrackWho"></span></div>
+          <div class="stepper">
+            <button type="button" id="lobTrackPrev" aria-label="Previous track">&#9664;</button>
+            <span id="lobTrackName">Dusk Ring</span>
+            <button type="button" id="lobTrackNext" aria-label="Next track">&#9654;</button>
+          </div>
+        </div>
+        <div class="seg-wrap">
+          <div class="label">Your car</div>
+          <div class="stepper">
+            <button type="button" id="lobCarPrev" aria-label="Previous car">&#9664;</button>
+            <span id="lobCarName">Comet</span>
+            <button type="button" id="lobCarNext" aria-label="Next car">&#9654;</button>
+          </div>
+        </div>
+      </div>
+      <div class="run-row">
+        <button class="go" id="lobbyStart" type="button">Start race</button>
+      </div>
+      <p class="net-msg" id="lobbyMsg" role="status"></p>
+    </section>
+
   </div>
 </div>
 
@@ -487,9 +652,10 @@ window.__apexBoot = function () {
     document.documentElement.classList.add('is-touch');
     Array.prototype.forEach.call(document.querySelectorAll('.kb'), function (el) { el.textContent = '↺'; });
   }
+  var PLAY_BTNS = ['m-time', 'm-race', 'm-online'];
   function showError(text) {
     var el = $('errmsg'); el.textContent = text; el.hidden = false;
-    $('go').disabled = true;
+    PLAY_BTNS.forEach(function (id) { $(id).disabled = true; });
   }
   function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function recall(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -589,33 +755,20 @@ window.__apexBoot = function () {
   setFps(fpsMode);
   setShowFps(showFps ? 'on' : 'off');
 
-  // game mode and rival difficulty
-  var MODE_NOTE = {
-    time: 'Just you and the clock. Best laps are saved.',
-    race: 'Three laps against three rivals. Fuel and tires last twice as long.'
-  };
+  // game mode (picked on the main menu) and rival difficulty
   var AI_LEVEL = {
     easy:   { lat: 15, top: 0.82, note: 'Rivals brake early and leave room.' },
     normal: { lat: 21, top: 0.90, note: 'A fair fight on most tracks.' },
     hard:   { lat: 28, top: 0.97, note: 'Rivals carry real speed through corners.' }
   };
-  var mode = recall('apex-dusk.mode'); if (!MODE_NOTE[mode]) mode = 'time';
+  var mode = 'time'; // 'time', 'race' or 'online'
   var aiLevel = recall('apex-dusk.ai'); if (!AI_LEVEL[aiLevel]) aiLevel = 'normal';
-  function setMode(v) {
-    mode = v; store('apex-dusk.mode', v);
-    paintSeg('modeSeg', v);
-    $('modeNote').textContent = MODE_NOTE[v];
-    $('aiWrap').hidden = v !== 'race';
-    $('go').textContent = v === 'race' ? 'Start race' : 'Start engine';
-  }
   function setAi(v) {
     aiLevel = v; store('apex-dusk.ai', v);
     paintSeg('aiSeg', v);
     $('aiNote').textContent = AI_LEVEL[v].note;
   }
-  wireSeg('modeSeg', setMode);
   wireSeg('aiSeg', setAi);
-  setMode(mode);
   setAi(aiLevel);
   // iOS: stop pinch and double-tap zoom from stealing the thumbs
   document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
@@ -762,6 +915,10 @@ window.__apexBoot = function () {
     setPressed('tracks', i); loadBest();
     if (onTrackChange) onTrackChange();
   }
+  // the cards are measured when drawn, so draw them again once their screen is visible
+  function redrawOutlines() {
+    TRACKS.forEach(function (t) { var b = $('track-' + t.id); if (b) drawOutline(b.querySelector('canvas'), t); });
+  }
   buildPickers();
   loadBest();
 
@@ -777,7 +934,7 @@ window.__apexBoot = function () {
     showError('This browser could not start 3D graphics (WebGL). In Edge or Chrome, open Settings, then System, turn on “Use graphics acceleration when available”, restart the browser and reload this page.');
     return;
   }
-  $('go').disabled = false;
+  PLAY_BTNS.forEach(function (id) { $(id).disabled = false; });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -1228,11 +1385,15 @@ window.__apexBoot = function () {
   var keys = Object.create(null);
   var touch = { gas: false, brake: false, hand: false, left: false, right: false, steer: 0, stick: false };
   window.addEventListener('keydown', function (e) {
+    if (e.target && e.target.tagName === 'INPUT') return; // typing a name or a room code
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].indexOf(e.code) >= 0 && state !== 'menu') e.preventDefault();
     keys[e.code] = true;
-    if (e.code === 'KeyR' && !e.repeat) resetAction();
+    if (e.code === 'KeyR' && !e.repeat && !paused) resetAction();
     if (e.code === 'KeyM' && !e.repeat) toggleMute();
-    if (e.code === 'Escape' && state !== 'menu') toMenu();
+    if (e.code === 'Escape' && !e.repeat) {
+      if (state === 'menu') { if (screenNow !== 'main') back(); }
+      else setPause(!paused);
+    }
   });
   window.addEventListener('keyup', function (e) { keys[e.code] = false; });
   function releaseAll() {
@@ -1304,7 +1465,7 @@ window.__apexBoot = function () {
   var NO_INPUT = { up: false, down: false, hand: false, steer: 0 };
 
   // ---------- audio ----------
-  var audio = null, muted = false;
+  var audio = null, muted = recall('apex-dusk.mute') === 'on';
   function initAudio() {
     try {
       var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
@@ -1334,7 +1495,20 @@ window.__apexBoot = function () {
     audio.wf.frequency.setTargetAtTime(350 + ws * 900, t, 0.1);
     audio.wg.gain.setTargetAtTime(!muted && state === 'racing' ? ws * ws * 0.07 : 0, t, 0.12);
   }
-  function toggleMute() { muted = !muted; $('mute').textContent = muted ? 'Sound off' : 'Sound on'; }
+  function quietAudio() {
+    if (!audio) return;
+    var t = audio.ctx.currentTime;
+    audio.g.gain.setTargetAtTime(0, t, 0.05); audio.wg.gain.setTargetAtTime(0, t, 0.05);
+  }
+  function setMute(v) {
+    muted = v; store('apex-dusk.mute', v ? 'on' : 'off');
+    $('mute').textContent = muted ? 'Sound off' : 'Sound on';
+    paintSeg('soundSeg', muted ? 'off' : 'on');
+    if (muted) quietAudio();
+  }
+  function toggleMute() { setMute(!muted); }
+  wireSeg('soundSeg', function (v) { setMute(v === 'off'); });
+  setMute(muted);
   $('mute').addEventListener('click', toggleMute);
   $('gfx').addEventListener('click', function () {
     setQuality(quality === 'high' ? 'medium' : quality === 'medium' ? 'low' : 'high');
@@ -1378,7 +1552,7 @@ window.__apexBoot = function () {
     rivals = [];
   }
   function gridSlot(k) { return { i: N - 8 - 7 * k, off: (k % 2 ? 3 : -3) }; }
-  function rivalProg(r) { return r.lap * N + r.s; }
+  function rivalProg(r) { return r.remote ? r.prog : r.lap * N + r.s; }
   function poseRival(r) {
     var i = Math.floor(r.s) % N, j = (i + 1) % N, f = r.s - Math.floor(r.s);
     r.x = sideX(i, r.off) * (1 - f) + sideX(j, r.off) * f;
@@ -1388,6 +1562,7 @@ window.__apexBoot = function () {
     r.obj.group.rotation.y = r.h;
   }
   function setupRace() {
+    if (mode === 'online') { setupOnline(); return; }
     clearRivals();
     var lv = AI_LEVEL[aiLevel], step = LEN / N;
     for (var k = 0; k < 3; k++) {
@@ -1417,6 +1592,7 @@ window.__apexBoot = function () {
     pProg = ps.i - N; raceLast = ps.i; raceLapShown = 1; racePos = 4; finished = null;
   }
   function updateRivals(dt) {
+    if (net.racing) { updateRemotes(dt); return; }
     var step = LEN / N;
     var pLat = lateral(car.idx, car.x, car.z), pSpd = info.speed || 0;
     rivals.forEach(function (r) {
@@ -1477,20 +1653,21 @@ window.__apexBoot = function () {
         var sp = document.createElement('span'); sp.textContent = txt; li.appendChild(sp);
       });
       ol.appendChild(li);
+      if (row.me) finished.pos = k + 1;
     });
+    $('resLabel').textContent = finished.pos === 1 ? 'You win' : 'Race finished';
+    var h = $('resPos'); h.textContent = 'P' + finished.pos;
+    var sm = document.createElement('small'); sm.textContent = 'of ' + rows.length; h.appendChild(sm);
   }
   function finishRace() {
     state = 'finished';
     finished = { pos: racePos, time: raceTime };
     releaseAll();
-    $('resLabel').textContent = racePos === 1 ? 'You win' : 'Race finished';
-    var h = $('resPos'); h.textContent = 'P' + racePos;
-    var sm = document.createElement('small'); sm.textContent = 'of ' + (rivals.length + 1); h.appendChild(sm);
     renderResult();
     $('result').hidden = false;
     $('pitPanel').hidden = true; pit.active = false;
   }
-  $('again').addEventListener('click', function () { startRun(); });
+  $('again').addEventListener('click', function () { if (net.racing) toLobby(); else startRun(); });
   $('resMenu').addEventListener('click', function () { toMenu(); });
 
   applyTheme(TRACKS[tsel].theme);
@@ -1512,17 +1689,54 @@ window.__apexBoot = function () {
   onCarChange = function () { rebuildCar(); };
   onTrackChange = function () { applyTheme(TRACKS[tsel].theme); buildTrack(TRACKS[tsel]); placeOnGrid(); };
 
+  // ---------- menu screens ----------
+  var SCREENS = ['main', 'track', 'car', 'settings', 'help', 'online', 'lobby'];
+  var MODE_NAME = { time: 'Time attack', race: 'Race' };
+  var screenNow = 'main', paused = false;
+  function show(name) {
+    screenNow = name;
+    SCREENS.forEach(function (s) { $('scr-' + s).hidden = s !== name; });
+    $('intro').scrollTop = 0;
+    if (name === 'track') redrawOutlines();
+  }
+  function chooseMode(v) {
+    mode = v;
+    $('aiWrap').hidden = v !== 'race';
+    $('trackStep').textContent = MODE_NAME[v] + ' · Step 1 of 2';
+    $('carStep').textContent = MODE_NAME[v] + ' · Step 2 of 2';
+    $('go').textContent = v === 'race' ? 'Start race' : 'Start engine';
+    $('bestWrap').hidden = v !== 'time';
+    show('track');
+  }
+  function back() {
+    if (screenNow === 'car') show('track');
+    else if (screenNow === 'lobby') { netLeave(); show('online'); }
+    else if (screenNow === 'online') { netLeave(); show('main'); }
+    else show('main');
+  }
+  $('m-time').addEventListener('click', function () { chooseMode('time'); });
+  $('m-race').addEventListener('click', function () { chooseMode('race'); });
+  $('m-online').addEventListener('click', function () { netMsg(''); show('online'); });
+  $('m-settings').addEventListener('click', function () { show('settings'); });
+  $('m-help').addEventListener('click', function () { show('help'); });
+  $('trackNext').addEventListener('click', function () { show('car'); });
+  Array.prototype.forEach.call(document.querySelectorAll('.back'), function (b) { b.addEventListener('click', back); });
+
   function startRun() {
     if (!audio) initAudio();
     if (audio && audio.ctx.state === 'suspended') { try { audio.ctx.resume(); } catch (e) {} }
     cur = CARS[sel];
     if (isTouch && ctrl === 'tilt' && !tilt.ok) enableTilt(); // iOS grants motion access only from a tap
     $('intro').hidden = true; $('hud').hidden = false;
+    paused = false; $('pause').hidden = true;
     buildMap();
-    raceOn = mode === 'race';
+    raceOn = mode !== 'time';
     if (raceOn) setupRace(); else { clearRivals(); placeOnGrid(); }
     $('result').hidden = true;
     $('bestRow').hidden = raceOn; $('pos').hidden = !raceOn;
+    $('pos').querySelector('small').textContent = '/ ' + (rivals.length + 1);
+    $('again').textContent = net.racing ? 'Back to lobby' : 'Race again';
+    $('resMenu').textContent = net.racing ? 'Leave room' : 'Menu';
     car.fuel = 100; car.tires = 100;
     pit.active = false; pit.cool = false; $('pitPanel').hidden = true;
     laps = 0; cps = [false, false, false, false]; raceTime = 0; lapStart = 0;
@@ -1530,17 +1744,436 @@ window.__apexBoot = function () {
     $('lapLabel').textContent = raceOn ? 'Lap 1 / ' + LAPS : 'Lap 1';
     $('toast').classList.remove('show'); toastT = 0;
   }
-  function toMenu() {
+  // stop driving and show the menu layer again
+  function leaveRun() {
     state = 'menu'; releaseAll();
+    paused = false; $('pause').hidden = true;
     $('hud').hidden = true; $('intro').hidden = false;
     pit.active = false;
     clearRivals(); raceOn = false; finished = null;
     $('result').hidden = true;
     placeOnGrid();
-    try { $('go').focus(); } catch (e) {}
+  }
+  function toMenu() {
+    leaveRun();
+    netLeave();
+    show('main');
+    try { $('m-time').focus(); } catch (e) {}
+  }
+  function toLobby() {
+    leaveRun();
+    net.racing = false;
+    showLobby();
+  }
+  // Pause stops a solo game. An online race cannot stop, so there it only opens the panel.
+  function setPause(v) {
+    if (state !== 'racing' && state !== 'countdown') return;
+    paused = v; $('pause').hidden = !v;
+    if (!v) return;
+    releaseAll();
+    if (!net.racing) quietAudio();
+    $('pauseNote').textContent = net.racing ? 'The online race keeps running' : 'Game paused';
+    $('pRestart').hidden = net.racing;
+    $('pQuit').textContent = net.racing ? 'Leave room' : 'Quit to menu';
+    try { $('pResume').focus(); } catch (e) {}
   }
   $('go').addEventListener('click', startRun);
-  $('garage').addEventListener('click', toMenu);
+  $('garage').addEventListener('click', function () { setPause(true); });
+  $('pResume').addEventListener('click', function () { setPause(false); });
+  $('pRestart').addEventListener('click', function () { if (!net.racing) startRun(); });
+  $('pQuit').addEventListener('click', toMenu);
+
+  // ---------- online: peer-to-peer rooms through PeerJS ----------
+  // One player hosts. Every guest connects to the host, and the host passes each car's position on to the others.
+  // Each player drives on their own screen; the others' cars are shown from the positions they send.
+  var PEER_SRC = [
+    'https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js',
+    'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js',
+    'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js'
+  ];
+  var ROOM = 'apex-dusk-room-', MAX_PLAYERS = 4, SEND_HZ = 15;
+  var NET_DOWN = 'Could not reach the online room service. Check your connection and try again. A preview page or a strict network can block it; the game on its own website works best.';
+  var NO_ONLINE = 'This browser cannot play online.';
+  var SLOT_LOOK = [
+    { color: 0xff5a36, css: '#ff5a36' },
+    { color: 0xb86bff, css: '#b86bff' },
+    { color: 0xf1ece3, css: '#f1ece3' },
+    { color: 0x4f8cff, css: '#4f8cff' }
+  ];
+  var net = { on: false, host: false, busy: false, racing: false, peer: null, hostConn: null, conns: [], players: [],
+              id: 0, code: '', track: 0, tok: 0, timer: 0, sendT: 0 };
+  var myName = recall('apex-dusk.name') || '';
+
+  function netMsg(text, bad) { var el = $('netMsg'); el.textContent = text || ''; el.classList.toggle('bad', !!bad); }
+  function cleanName(s) {
+    s = String(s == null ? '' : s).replace(/[^A-Za-z0-9 _.\-]/g, '').trim().slice(0, 12);
+    return s || 'Player';
+  }
+  function carIdx(v) { v = v | 0; return v >= 0 && v < CARS.length ? v : 0; }
+  function trackIdx(v) { v = v | 0; return v >= 0 && v < TRACKS.length ? v : 0; }
+  function num(v, lim) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= lim; }
+  function cleanPlayers(list) {
+    var out = [], seen = {};
+    if (!Array.isArray(list)) return out;
+    list.slice(0, MAX_PLAYERS).forEach(function (p) {
+      if (!p || typeof p !== 'object') return;
+      var id = p.id | 0;
+      if (id < 0 || id >= MAX_PLAYERS || seen[id]) return;
+      seen[id] = true;
+      out.push({ id: id, name: cleanName(p.name), car: carIdx(p.car) });
+    });
+    return out;
+  }
+  myName = cleanName(myName);
+  $('netName').value = myName;
+
+  function loadPeer(done) {
+    var k = 0;
+    (function next() {
+      if (window.Peer) { done(true); return; }
+      if (k >= PEER_SRC.length) { done(false); return; }
+      var s = document.createElement('script');
+      s.src = PEER_SRC[k++]; s.onload = next; s.onerror = next;
+      document.head.appendChild(s);
+    })();
+  }
+
+  // Drop the room and every connection. Late callbacks from the old room see a new token and do nothing.
+  function netReset() {
+    net.tok++;
+    var p = net.peer;
+    if (net.timer) { clearTimeout(net.timer); net.timer = 0; }
+    net.peer = null; net.hostConn = null; net.conns = []; net.players = [];
+    net.on = net.host = net.busy = net.racing = false; net.code = '';
+    if (mode === 'online') mode = 'time';
+    if (p) { try { p.destroy(); } catch (e) {} }
+  }
+  function netLeave() { if (net.on || net.busy) netReset(); }
+  function netFail(text) {
+    var driving = state !== 'menu';
+    netReset();
+    if (driving) leaveRun();
+    show('online');
+    netMsg(text, true);
+  }
+
+  function netOpen(asHost) {
+    if (net.busy || net.on) return;
+    myName = cleanName($('netName').value); $('netName').value = myName; store('apex-dusk.name', myName);
+    var code = '';
+    if (!asHost) {
+      code = String($('netCode').value || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4);
+      $('netCode').value = code;
+      if (code.length !== 4) { netMsg('Type the 4-letter room code your friend shared.', true); return; }
+    }
+    // sound and tilt need a tap to switch on, and a guest's race starts without one
+    if (!audio) initAudio();
+    if (audio && audio.ctx.state === 'suspended') { try { audio.ctx.resume(); } catch (e) {} }
+    if (isTouch && ctrl === 'tilt' && !tilt.ok) enableTilt();
+    net.busy = true;
+    var tok = ++net.tok;
+    netMsg(asHost ? 'Opening a room…' : 'Looking for room ' + code + '…');
+    loadPeer(function (ok) {
+      if (tok !== net.tok) return;
+      if (!ok) { netFail('The online library did not load. Check your connection, then try again.'); return; }
+      if (asHost) hostRoom(tok, 0); else joinRoom(tok, code);
+    });
+  }
+
+  // ----- host side -----
+  function hostRoom(tok, tries) {
+    var A = 'ABCDEFGHJKLMNPQRSTUVWXYZ', code = '';
+    for (var k = 0; k < 4; k++) code += A.charAt(Math.floor(Math.random() * A.length));
+    var peer;
+    try { peer = new window.Peer(ROOM + code, { debug: 0 }); } catch (e) { netFail(NO_ONLINE); return; }
+    net.peer = peer;
+    if (net.timer) clearTimeout(net.timer);
+    net.timer = setTimeout(function () { if (tok === net.tok && !net.on) netFail(NET_DOWN); }, 15000);
+    peer.on('open', function () {
+      if (tok !== net.tok) return;
+      clearTimeout(net.timer); net.timer = 0;
+      net.busy = false; net.on = true; net.host = true; net.id = 0; net.code = code;
+      net.players = [{ id: 0, name: myName, car: sel }]; net.track = tsel;
+      mode = 'online';
+      showLobby();
+    });
+    peer.on('connection', function (c) { if (tok === net.tok) hostAccept(tok, c); });
+    peer.on('disconnected', function () {
+      // the room service dropped; players already connected stay connected, so keep trying quietly
+      setTimeout(function () { if (tok === net.tok && net.on && !peer.destroyed) { try { peer.reconnect(); } catch (e) {} } }, 3000);
+    });
+    peer.on('error', function (err) {
+      if (tok !== net.tok) return;
+      var type = err && err.type;
+      if (net.on) {
+        if (screenNow === 'lobby' && state === 'menu' && type !== 'peer-unavailable') {
+          $('lobbyMsg').textContent = 'Lost touch with the room service. New players may not get in, but players already here can race.';
+        }
+        return;
+      }
+      if (type === 'unavailable-id' && tries < 4) { net.peer = null; try { peer.destroy(); } catch (e) {} hostRoom(tok, tries + 1); return; }
+      netFail(type === 'browser-incompatible' ? NO_ONLINE : NET_DOWN);
+    });
+  }
+  function broadcast(msg, except) {
+    net.conns.forEach(function (c) { if (c !== except && c.open) { try { c.send(msg); } catch (e) {} } });
+  }
+  function sendLobby() {
+    broadcast({ t: 'lobby', players: net.players, track: net.track });
+    if (screenNow === 'lobby') renderLobby();
+  }
+  function hostAccept(tok, c) {
+    c.on('open', function () {
+      if (tok !== net.tok) return;
+      if (net.players.length >= MAX_PLAYERS || net.racing) {
+        try { c.send({ t: 'no', why: net.racing ? 'racing' : 'full' }); } catch (e) {}
+        setTimeout(function () { try { c.close(); } catch (e) {} }, 800);
+        return;
+      }
+      var id = 1;
+      while (net.players.some(function (p) { return p.id === id; })) id++;
+      c.apexId = id;
+      net.conns.push(c);
+      net.players.push({ id: id, name: 'Player ' + (id + 1), car: 0 });
+      try { c.send({ t: 'you', id: id }); } catch (e) {}
+      sendLobby();
+    });
+    c.on('data', function (m) { if (tok === net.tok) hostData(c, m); });
+    c.on('close', function () { if (tok === net.tok) hostDrop(c); });
+    c.on('error', function () { if (tok === net.tok) hostDrop(c); });
+  }
+  function hostData(c, m) {
+    if (!m || typeof m !== 'object' || c.apexId == null) return;
+    var me = null;
+    net.players.forEach(function (p) { if (p.id === c.apexId) me = p; });
+    if (!me) return;
+    if (m.t === 'hi') { me.name = cleanName(m.name); me.car = carIdx(m.car); sendLobby(); }
+    else if (m.t === 'car') { me.car = carIdx(m.car); sendLobby(); }
+    else if (m.t === 's') { m.id = c.apexId; onState(m); broadcast(m, c); }
+  }
+  function hostDrop(c) {
+    if (c.apexId == null) return;
+    var id = c.apexId; c.apexId = null;
+    net.conns = net.conns.filter(function (o) { return o !== c; });
+    net.players = net.players.filter(function (p) { return p.id !== id; });
+    dropRemote(id);
+    broadcast({ t: 'bye', id: id });
+    sendLobby();
+  }
+
+  // ----- guest side -----
+  function joinRoom(tok, code) {
+    var peer;
+    try { peer = new window.Peer({ debug: 0 }); } catch (e) { netFail(NO_ONLINE); return; }
+    net.peer = peer;
+    net.timer = setTimeout(function () {
+      if (tok === net.tok && !net.on) netFail('No answer from room ' + code + '. Check the code, and that the host still has the room open.');
+    }, 15000);
+    peer.on('open', function () {
+      if (tok !== net.tok) return;
+      var c = peer.connect(ROOM + code, { reliable: true });
+      net.hostConn = c;
+      c.on('open', function () { if (tok === net.tok) { try { c.send({ t: 'hi', name: myName, car: sel }); } catch (e) {} } });
+      c.on('data', function (m) { if (tok === net.tok) guestData(m, code); });
+      c.on('close', function () {
+        if (tok === net.tok) netFail(net.on ? 'The host left, so the room closed.' : 'Could not join room ' + code + '.');
+      });
+      c.on('error', function () { if (tok === net.tok) netFail('Lost the connection to the host.'); });
+    });
+    peer.on('error', function (err) {
+      if (tok !== net.tok || net.on) return; // once joined, the direct link to the host is what matters
+      var type = err && err.type;
+      netFail(type === 'peer-unavailable' ? 'No room with code ' + code + '. Check the code with your friend.'
+        : type === 'browser-incompatible' ? NO_ONLINE : NET_DOWN);
+    });
+  }
+  function guestData(m, code) {
+    if (!m || typeof m !== 'object') return;
+    if (m.t === 'no') {
+      netFail(m.why === 'racing' ? 'Room ' + code + ' is in the middle of a race. Try again in a minute.' : 'Room ' + code + ' is full.');
+    } else if (m.t === 'you') {
+      var id = m.id | 0;
+      if (id < 1 || id >= MAX_PLAYERS) { netFail('Could not join room ' + code + '.'); return; }
+      if (net.timer) { clearTimeout(net.timer); net.timer = 0; }
+      net.busy = false; net.on = true; net.host = false; net.id = id; net.code = code;
+      mode = 'online';
+      showLobby();
+    } else if (!net.on) {
+      return;
+    } else if (m.t === 'lobby') {
+      net.players = cleanPlayers(m.players); net.track = trackIdx(m.track);
+      if (state === 'menu') {
+        if (tsel !== net.track) selectTrack(net.track);
+        if (screenNow === 'lobby') renderLobby();
+      }
+    } else if (m.t === 'start') {
+      net.players = cleanPlayers(m.players); net.track = trackIdx(m.track);
+      beginOnline();
+    } else if (m.t === 's') {
+      onState(m);
+    } else if (m.t === 'bye') {
+      var gone = m.id | 0;
+      net.players = net.players.filter(function (p) { return p.id !== gone; });
+      dropRemote(gone);
+    }
+  }
+
+  // ----- shared: lobby, start, and the other players' cars -----
+  function netSend(msg) {
+    if (net.host) broadcast(msg);
+    else if (net.hostConn && net.hostConn.open) { try { net.hostConn.send(msg); } catch (e) {} }
+  }
+  function showLobby() {
+    $('intro').hidden = false;
+    show('lobby');
+    renderLobby();
+  }
+  function renderLobby() {
+    $('roomCode').textContent = net.code;
+    var ol = $('lobbyList'); ol.textContent = '';
+    net.players.forEach(function (p) {
+      var li = document.createElement('li'), sw = document.createElement('i'), a = document.createElement('span'), b = document.createElement('span');
+      sw.style.background = SLOT_LOOK[p.id % SLOT_LOOK.length].css;
+      a.textContent = p.name + (p.id === net.id ? ' (you)' : '') + (p.id === 0 ? ' · host' : '');
+      b.textContent = CARS[carIdx(p.car)].name;
+      li.appendChild(sw); li.appendChild(a); li.appendChild(b); ol.appendChild(li);
+    });
+    for (var k = net.players.length; k < MAX_PLAYERS; k++) {
+      var e = document.createElement('li'); e.className = 'empty';
+      var gap = document.createElement('i'), txt = document.createElement('span');
+      txt.textContent = 'Open slot';
+      e.appendChild(gap); e.appendChild(txt); e.appendChild(document.createElement('span')); ol.appendChild(e);
+    }
+    $('lobTrackName').textContent = TRACKS[trackIdx(net.track)].name;
+    $('lobTrackPrev').disabled = $('lobTrackNext').disabled = !net.host;
+    $('lobTrackWho').textContent = net.host ? '' : '(the host picks)';
+    $('lobCarName').textContent = CARS[sel].name;
+    $('lobbyStart').hidden = !net.host;
+    $('lobbyMsg').textContent = !net.host ? 'Waiting for the host to start the race.'
+      : net.players.length < 2 ? 'Share the code. Your friends pick Online race, type it, and press Join room.'
+      : 'Start when everyone is in. Three laps.';
+  }
+  function stepTrack(d) {
+    if (!net.on || !net.host) return;
+    net.track = (net.track + d + TRACKS.length) % TRACKS.length;
+    selectTrack(net.track);
+    sendLobby();
+  }
+  function stepCar(d) {
+    if (!net.on) return;
+    selectCar((sel + d + CARS.length) % CARS.length);
+    net.players.forEach(function (p) { if (p.id === net.id) p.car = sel; });
+    if (net.host) sendLobby(); else { netSend({ t: 'car', car: sel }); renderLobby(); }
+  }
+  function beginOnline() {
+    if (!net.on) return;
+    if (state !== 'menu') leaveRun();
+    if (tsel !== net.track) selectTrack(net.track);
+    net.racing = true; net.sendT = 0; mode = 'online';
+    startRun();
+  }
+  function nameTag(name, css) {
+    var tex = canvasTex(256, 64, function (c) {
+      c.font = '700 34px "IBM Plex Mono", Menlo, Consolas, monospace';
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      var w = Math.min(244, c.measureText(name).width + 28);
+      c.fillStyle = 'rgba(24,22,50,0.8)'; c.fillRect(128 - w / 2, 6, w, 46);
+      c.fillStyle = css; c.fillRect(128 - w / 2, 52, w, 6);
+      c.fillStyle = '#f6efe6'; c.fillText(name, 128, 30, 230);
+    });
+    var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+    sp.scale.set(4.4, 1.1, 1); sp.position.y = 2.8;
+    return sp;
+  }
+  // put every other player's car on the grid; your grid slot is your seat number in the room
+  function setupOnline() {
+    clearRivals();
+    net.players.forEach(function (p) {
+      if (p.id === net.id) return;
+      var base = CARS[carIdx(p.car)], look = SLOT_LOOK[p.id % SLOT_LOOK.length];
+      var def = {}; for (var key in base) def[key] = base[key];
+      def.color = look.color;
+      var slot = gridSlot(p.id);
+      var r = { remote: true, id: p.id, name: p.name, css: look.css, def: def, obj: makeCar(def),
+                x: sideX(slot.i, slot.off), z: sideZ(slot.i, slot.off), h: headingAt(slot.i),
+                tx: 0, tz: 0, th: 0, tvx: 0, tvz: 0, age: 0, v: 0, steer: 0, wheel: 0,
+                prog: slot.i - N, s: 0, lap: 0, off: 0, finish: null };
+      r.tx = r.x; r.tz = r.z; r.th = r.h;
+      r.obj.group.add(nameTag(p.name, look.css));
+      r.obj.group.position.set(r.x, 0, r.z); r.obj.group.rotation.y = r.h;
+      scene.add(r.obj.group);
+      rivals.push(r);
+    });
+    var ps = gridSlot(net.id);
+    place(sideX(ps.i, ps.off), sideZ(ps.i, ps.off), headingAt(ps.i), ps.i);
+    pProg = ps.i - N; raceLast = ps.i; raceLapShown = 1; racePos = rivals.length + 1; finished = null;
+  }
+  function onState(m) {
+    if (!net.racing) return;
+    var id = m.id | 0, r = null;
+    rivals.forEach(function (o) { if (o.remote && o.id === id) r = o; });
+    if (!r || !num(m.x, 5000) || !num(m.z, 5000) || !num(m.h, 1e5) || !num(m.vx, 150) || !num(m.vz, 150) || !num(m.p, 1e6)) return;
+    r.tx = m.x; r.tz = m.z; r.th = m.h; r.tvx = m.vx; r.tvz = m.vz; r.age = 0;
+    r.steer = num(m.st, 1) ? m.st : 0;
+    r.prog = m.p;
+    if (r.finish == null && num(m.f, 36000) && m.f > 0) { r.finish = m.f; if (finished) renderResult(); }
+  }
+  // glide each remote car toward where its last message says it should be by now
+  function updateRemotes(dt) {
+    var k = 1 - Math.exp(-10 * dt);
+    rivals.forEach(function (r) {
+      if (!r.remote) return;
+      r.age = Math.min(r.age + dt, 0.3);
+      var px = r.tx + r.tvx * r.age, pz = r.tz + r.tvz * r.age;
+      var dx = px - r.x, dz = pz - r.z;
+      if (dx * dx + dz * dz > 400) { r.x = px; r.z = pz; r.h = r.th; }
+      else { r.x += dx * k; r.z += dz * k; r.h += angDiff(r.h, r.th) * k; }
+      r.v = Math.hypot(r.tvx, r.tvz);
+      r.obj.group.position.set(r.x, 0, r.z); r.obj.group.rotation.y = r.h;
+      r.wheel += r.v * dt / 0.42;
+      r.obj.spins.forEach(function (w) { w.rotation.x = r.wheel; });
+      r.obj.fronts.forEach(function (p) { p.rotation.y = -r.steer * 0.45; });
+    });
+  }
+  function dropRemote(id) {
+    var before = rivals.length;
+    rivals = rivals.filter(function (r) {
+      if (!r.remote || r.id !== id) return true;
+      scene.remove(r.obj.group); disposeGroup(r.obj.group);
+      return false;
+    });
+    if (rivals.length === before) return;
+    $('pos').querySelector('small').textContent = '/ ' + (rivals.length + 1);
+    if (finished) renderResult();
+    else if (state !== 'menu') toast('A player left', '');
+  }
+  function sendState(dt) {
+    net.sendT -= dt;
+    if (net.sendT > 0) return;
+    net.sendT = 1 / SEND_HZ;
+    var r2 = function (v) { return Math.round(v * 100) / 100; };
+    netSend({ t: 's', id: net.id, x: r2(car.x), z: r2(car.z), h: Math.round(car.h * 1000) / 1000, vx: r2(car.vx), vz: r2(car.vz),
+              st: r2(car.steer), p: r2(pProg), f: finished ? Math.round(finished.time * 1000) / 1000 : null });
+  }
+
+  $('netCreate').addEventListener('click', function () { netOpen(true); });
+  $('netJoin').addEventListener('click', function () { netOpen(false); });
+  $('netCode').addEventListener('keydown', function (e) { if (e.key === 'Enter') netOpen(false); });
+  $('lobTrackPrev').addEventListener('click', function () { stepTrack(-1); });
+  $('lobTrackNext').addEventListener('click', function () { stepTrack(1); });
+  $('lobCarPrev').addEventListener('click', function () { stepCar(-1); });
+  $('lobCarNext').addEventListener('click', function () { stepCar(1); });
+  $('lobbyStart').addEventListener('click', function () {
+    if (!net.on || !net.host) return;
+    broadcast({ t: 'start', track: net.track, players: net.players });
+    beginOnline();
+  });
+  $('roomCopy').addEventListener('click', function () {
+    var btn = $('roomCopy');
+    function said(t) { btn.textContent = t; setTimeout(function () { btn.textContent = 'Copy code'; }, 1600); }
+    try { navigator.clipboard.writeText(net.code).then(function () { said('Copied'); }, function () { said('Copy failed'); }); }
+    catch (e) { said('Copy failed'); }
+  });
 
   function toast(main, sub) {
     var el = $('toast');
@@ -1612,7 +2245,7 @@ window.__apexBoot = function () {
   var smokeT = 0;
 
   function update(dt) {
-    var inp = (state === 'racing' && !pit.active) ? readInput() : NO_INPUT;
+    var inp = (state === 'racing' && !pit.active && !paused) ? readInput() : NO_INPUT;
 
     if (state === 'countdown') {
       countT += dt;
@@ -1665,6 +2298,8 @@ window.__apexBoot = function () {
         if (pProg >= LAPS * N) finishRace();
       }
     }
+
+    if (net.racing && state !== 'menu') sendState(dt);
 
     // lap logic (time attack)
     if (state === 'racing' && !raceOn) {
@@ -1784,7 +2419,7 @@ window.__apexBoot = function () {
       fpsT = 0; fpsN = 0;
     }
     if (dt > 0.05) dt = 0.05;
-    update(dt);
+    if (!paused || net.racing) update(dt); // a solo game stands still while paused
     renderer.render(scene, camera);
   }
   requestAnimationFrame(frame);
