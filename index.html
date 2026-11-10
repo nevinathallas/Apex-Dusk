@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="Apex Dusk: a 3D time-attack driving game with three tracks, three cars, fuel, tire wear and pit stops.">
+<meta name="description" content="Apex Dusk: a 3D driving game with time attack and AI races, three tracks, three cars, fuel, tire wear and pit stops.">
 <style>[hidden]{display:none!important} body{margin:0} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <title>Apex Dusk</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -156,8 +156,9 @@
 
   /* ---------- phone controller ---------- */
   .touch { display: none; position: absolute; inset: 0; pointer-events: none; }
+  .steer-zone { display: none; pointer-events: auto; touch-action: none; position: absolute; left: 0; bottom: 0; width: 46%; height: 64%; }
   .stick {
-    pointer-events: auto; touch-action: none; position: absolute;
+    pointer-events: none; position: absolute;
     left: max(16px, env(safe-area-inset-left, 0px));
     bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
     width: 150px; height: 120px; border-radius: 60px;
@@ -175,10 +176,20 @@
     -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   }
   .tbtn.on { background: rgba(255, 90, 54, 0.6); border-color: var(--accent); }
-  .t-gas { right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); width: 96px; height: 120px; }
-  .t-brake { right: calc(max(16px, env(safe-area-inset-right, 0px)) + 106px); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); width: 76px; height: 86px; }
-  .t-drift { right: calc(max(16px, env(safe-area-inset-right, 0px)) + 106px); bottom: calc(env(safe-area-inset-bottom, 0px) + 112px); width: 76px; height: 40px; font-size: 16px; }
-  .t-reset { left: calc(max(16px, env(safe-area-inset-left, 0px)) + 160px); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); width: 48px; height: 48px; font-size: 22px; border-radius: 50%; }
+  .t-gas { right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); width: 104px; height: 126px; font-size: 26px; }
+  .t-brake { right: calc(max(16px, env(safe-area-inset-right, 0px)) + 114px); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); width: 86px; height: 92px; }
+  .t-drift { right: calc(max(16px, env(safe-area-inset-right, 0px)) + 114px); bottom: calc(env(safe-area-inset-bottom, 0px) + 118px); width: 86px; height: 44px; font-size: 16px; }
+  .t-reset { left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 150px); width: 48px; height: 48px; font-size: 22px; border-radius: 50%; }
+  .t-left, .t-right { display: none; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); width: 88px; height: 116px; font-size: 30px; }
+  .t-left { left: max(16px, env(safe-area-inset-left, 0px)); }
+  .t-right { left: calc(max(16px, env(safe-area-inset-left, 0px)) + 98px); }
+  .tilt-tip { display: none; position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-dim); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; }
+  /* one steering layout at a time */
+  .ctl-pad .steer-zone { display: block; }
+  .ctl-arrows .stick, .ctl-tilt .stick { display: none; }
+  .ctl-arrows .t-left, .ctl-arrows .t-right { display: grid; }
+  .ctl-tilt .tilt-tip { display: block; }
+  .ctl-tilt .t-reset { bottom: calc(env(safe-area-inset-bottom, 0px) + 60px); }
 
   .is-touch .touch { display: block; }
   .is-touch .keys-hint { display: none; }
@@ -212,7 +223,14 @@
     background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 10px 12px;
     display: flex; flex-direction: column; gap: 6px; pointer-events: auto;
   }
-  .card[aria-pressed="true"] { border-color: var(--pick); box-shadow: inset 0 0 0 1px var(--pick); }
+  .card { touch-action: manipulation; transition: border-color 0.12s, background-color 0.12s; }
+  .card:hover { border-color: rgba(246, 239, 230, 0.5); }
+  .card[aria-pressed="true"] { border-color: var(--pick); box-shadow: inset 0 0 0 1px var(--pick); background: rgba(52, 48, 92, 0.82); }
+  .card[aria-pressed="true"] .card-name::after {
+    content: "\2713"; margin-left: auto; flex: none; width: 18px; height: 18px; border-radius: 50%;
+    display: grid; place-items: center; font-family: var(--mono); font-size: 12px; font-weight: 500;
+    background: var(--pick); color: var(--accent-ink);
+  }
   .card-name { font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1; display: flex; align-items: center; gap: 8px; }
   .card-name i { width: 10px; height: 10px; border-radius: 2px; background: var(--pick); flex: none; }
   .card-blurb { font-size: 11px; color: var(--ink-dim); line-height: 1.35; min-height: 2.7em; }
@@ -244,6 +262,43 @@
   #errmsg { margin-top: 14px; color: var(--crit); font-size: 13px; line-height: 1.5; max-width: 52ch; }
   #loading { margin-top: 10px; font-size: 12px; color: var(--ink-dim); }
 
+  .side-btns { flex-wrap: wrap; justify-content: flex-end; max-width: 240px; }
+  .pos { font-family: var(--display); font-weight: 900; font-size: 34px; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .pos small { font-size: 16px; font-weight: 700; color: var(--ink-dim); margin-left: 4px; }
+  .result {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: min(340px, calc(100vw - 32px)); pointer-events: auto;
+    background: var(--panel); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border: 1px solid var(--line); border-radius: 6px; padding: 18px 20px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .result h2 { font-family: var(--display); font-weight: 900; font-size: 60px; line-height: 0.9; margin: 0; color: var(--accent); }
+  .result h2 small { font-size: 22px; color: var(--ink-dim); margin-left: 8px; }
+  .result ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .result li { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; color: var(--ink-dim); }
+  .result li.me { color: var(--ink); font-weight: 500; }
+  .result-btns { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+  .result .go { font-size: 22px; padding: 10px 20px; }
+  .fps {
+    font-size: 12px; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; color: var(--good);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 4px 8px;
+  }
+  .small-btn, .go { touch-action: manipulation; }
+  .settings { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-bottom: 16px; }
+  .seg-wrap { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .is-touch .seg-wrap.touch-only { display: flex; }
+  .seg { display: inline-flex; align-self: flex-start; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--panel); }
+  .seg button {
+    font: inherit; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim);
+    background: transparent; border: 0; border-right: 1px solid var(--line); padding: 0 14px; min-height: 40px;
+    cursor: pointer; pointer-events: auto; touch-action: manipulation;
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button:hover { color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--accent-ink); font-weight: 500; }
+  .seg button:focus-visible { outline: 3px solid var(--ink); outline-offset: -3px; }
+  .seg-note { font-size: 11px; color: var(--ink-dim); min-height: 1.4em; }
+
   @media (max-width: 560px) {
     #map { width: 104px; height: 104px; }
     .lap-panel { width: 168px; padding: 8px 12px 10px; }
@@ -273,7 +328,8 @@
   <div class="lap-panel">
     <div class="label" id="lapLabel">Lap 1</div>
     <div class="lap-time" id="lapTime">0:00.000</div>
-    <div class="best">Best <b id="bestTime">--:--.---</b></div>
+    <div class="best" id="bestRow">Best <b id="bestTime">--:--.---</b></div>
+    <div class="pos" id="pos" hidden>P4<small>/ 4</small></div>
     <div class="gauges">
       <div class="gauge"><span class="label">Fuel</span><div class="gbar"><i id="fuelBar"></i></div><b id="fuelPct">100%</b></div>
       <div class="gauge"><span class="label">Tires</span><div class="gbar"><i id="tireBar"></i></div><b id="tirePct">100%</b></div>
@@ -285,7 +341,9 @@
     <div class="side-btns">
       <button class="small-btn" id="garage" type="button">Menu</button>
       <button class="small-btn" id="mute" type="button">Sound on</button>
+      <button class="small-btn" id="gfx" type="button">Graphics: High</button>
     </div>
+    <div class="fps" id="fps" aria-label="Frames per second">-- FPS</div>
   </div>
   <div class="speed">
     <div class="speed-num" id="speed">0</div>
@@ -303,10 +361,23 @@
     <div class="gauge"><span class="label">Fuel</span><div class="gbar"><i id="pitFuelBar"></i></div><b id="pitFuelPct">0%</b></div>
     <div class="gauge"><span class="label">Tires</span><div class="gbar"><i id="pitTireBar"></i></div><b id="pitTirePct">0%</b></div>
   </div>
+  <div class="result" id="result" hidden>
+    <div class="label" id="resLabel">Race finished</div>
+    <h2 id="resPos">P1</h2>
+    <ol id="resList"></ol>
+    <div class="result-btns">
+      <button class="go" id="again" type="button">Race again</button>
+      <button class="small-btn" id="resMenu" type="button">Menu</button>
+    </div>
+  </div>
   <div class="notice" id="warn" hidden>Out of fuel. Coast into the pit box, or press <span class="kb">R</span> for a tow</div>
   <div class="notice" id="offhint" hidden>Lost? Press <span class="kb">R</span> to return to the track</div>
   <div class="touch" id="touch">
-    <div class="stick" id="stick" role="slider" aria-label="Steering" aria-valuemin="-1" aria-valuemax="1" aria-valuenow="0"><div class="knob" id="knob"></div></div>
+    <div class="steer-zone" id="steerZone" role="slider" aria-label="Steering" aria-valuemin="-1" aria-valuemax="1" aria-valuenow="0"></div>
+    <div class="stick" id="stick" aria-hidden="true"><div class="knob" id="knob"></div></div>
+    <div class="tbtn t-left" data-k="left" role="button" aria-label="Steer left">&#9664;</div>
+    <div class="tbtn t-right" data-k="right" role="button" aria-label="Steer right">&#9654;</div>
+    <div class="tilt-tip">Tilt to steer</div>
     <div class="tbtn t-reset" data-k="reset" role="button" aria-label="Return to track or tow to pits">&#8634;</div>
     <div class="tbtn t-drift" data-k="hand" role="button" aria-label="Handbrake">DRIFT</div>
     <div class="tbtn t-brake" data-k="brake" role="button" aria-label="Brake">BRAKE</div>
@@ -317,11 +388,67 @@
 <div class="intro gutter" id="intro">
   <div class="intro-inner">
     <h1>Apex <span>Dusk</span></h1>
-    <p class="lede">Hot-lap three circuits against the clock. Fuel burns and tires wear, so pick your car and plan when to pit.</p>
+    <p class="lede">Hot-lap three circuits against the clock, or race three rivals. Fuel burns and tires wear, so pick your car and plan when to pit.</p>
+    <div class="settings">
+      <div class="seg-wrap">
+        <div class="label">Mode</div>
+        <div class="seg" id="modeSeg" role="group" aria-label="Game mode">
+          <button type="button" id="mode-time" data-v="time">Time attack</button>
+          <button type="button" id="mode-race" data-v="race">Race</button>
+        </div>
+        <div class="seg-note" id="modeNote"></div>
+      </div>
+      <div class="seg-wrap" id="aiWrap">
+        <div class="label">Rivals</div>
+        <div class="seg" id="aiSeg" role="group" aria-label="Rival difficulty">
+          <button type="button" id="ai-easy" data-v="easy">Easy</button>
+          <button type="button" id="ai-normal" data-v="normal">Normal</button>
+          <button type="button" id="ai-hard" data-v="hard">Hard</button>
+        </div>
+        <div class="seg-note" id="aiNote"></div>
+      </div>
+    </div>
     <div class="label pick-label">Track</div>
     <div class="picks" id="tracks" role="group" aria-label="Choose a track"></div>
     <div class="label pick-label">Car</div>
     <div class="picks" id="cars" role="group" aria-label="Choose a car"></div>
+    <div class="settings">
+      <div class="seg-wrap">
+        <div class="label">Graphics</div>
+        <div class="seg" id="gfxSeg" role="group" aria-label="Graphics detail">
+          <button type="button" id="gfx-low" data-v="low">Low</button>
+          <button type="button" id="gfx-medium" data-v="medium">Medium</button>
+          <button type="button" id="gfx-high" data-v="high">High</button>
+        </div>
+        <div class="seg-note" id="gfxNote"></div>
+      </div>
+      <div class="seg-wrap">
+        <div class="label">Frame rate limit</div>
+        <div class="seg" id="fpsSeg" role="group" aria-label="Frame rate limit">
+          <button type="button" id="fps-30" data-v="30">30</button>
+          <button type="button" id="fps-60" data-v="60">60</button>
+          <button type="button" id="fps-max" data-v="max">Max</button>
+        </div>
+        <div class="seg-note" id="fpsNote"></div>
+      </div>
+      <div class="seg-wrap">
+        <div class="label">FPS counter</div>
+        <div class="seg" id="fpsShowSeg" role="group" aria-label="Show FPS counter">
+          <button type="button" id="fpsshow-off" data-v="off">Off</button>
+          <button type="button" id="fpsshow-on" data-v="on">On</button>
+        </div>
+        <div class="seg-note"></div>
+      </div>
+      <div class="seg-wrap touch-only">
+        <div class="label">Phone controls</div>
+        <div class="seg" id="ctrlSeg" role="group" aria-label="Phone controller type">
+          <button type="button" id="ctrl-pad" data-v="pad">Pad</button>
+          <button type="button" id="ctrl-arrows" data-v="arrows">Arrows</button>
+          <button type="button" id="ctrl-tilt" data-v="tilt">Tilt</button>
+        </div>
+        <div class="seg-note" id="ctrlNote"></div>
+      </div>
+    </div>
     <div class="run-row">
       <button class="go" id="go" type="button" disabled>Start engine</button>
       <div class="label stat-inline">Best lap<b id="statBest">--:--.---</b></div>
@@ -338,7 +465,7 @@
       <dt>R</dt><dd>Back to the track, or a tow to the pits when out of fuel</dd>
       <dt>M / Esc</dt><dd>Sound on or off / back to this menu</dd>
     </dl>
-    <p class="howto touch-only">Left thumb: slide the <b>steering pad</b>. Right thumb: <b>GAS</b>, <b>BRAKE</b> and <b>DRIFT</b>. The &#8634; button puts you back on track.</p>
+    <p class="howto touch-only">Left thumb steers, in the style you pick under <b>Phone controls</b>. Right thumb: <b>GAS</b>, <b>BRAKE</b> and <b>DRIFT</b>. The &#8634; button puts you back on track.</p>
     <p class="credit">Built by <span id="credit">Your Name</span> with Three.js and plain JavaScript.</p>
   </div>
 </div>
@@ -366,6 +493,133 @@ window.__apexBoot = function () {
   }
   function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function recall(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+  // ---------- settings: graphics detail and phone controller ----------
+  var Q = {
+    low:    { pr: 1,   shadow: 0,    trees: 110, smoke: false, wind: 30, label: 'Low',    note: 'Fastest. No shadows, fewer trees.' },
+    medium: { pr: 1.5, shadow: 1024, trees: 220, smoke: true,  wind: 60, label: 'Medium', note: 'Shadows on, lighter detail.' },
+    high:   { pr: 2,   shadow: 2048, trees: 320, smoke: true,  wind: 90, label: 'High',   note: 'Full detail and sharp shadows.' }
+  };
+  var CTRL_NOTE = {
+    pad: 'Slide your thumb anywhere on the left side.',
+    arrows: 'Left and right buttons under your thumb.',
+    tilt: 'Tilt the phone like a steering wheel.'
+  };
+  var quality = recall('apex-dusk.gfx'); if (!Q[quality]) quality = isTouch ? 'medium' : 'high';
+  var ctrl = recall('apex-dusk.ctrl'); if (!CTRL_NOTE[ctrl]) ctrl = 'pad';
+  var applyQuality = null;
+  var tilt = { on: false, ok: false, v: 0 };
+
+  function paintSeg(id, v) {
+    Array.prototype.forEach.call($(id).querySelectorAll('button'), function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-v') === v ? 'true' : 'false');
+    });
+  }
+  function wireSeg(id, fn) {
+    Array.prototype.forEach.call($(id).querySelectorAll('button'), function (b) {
+      b.addEventListener('click', function () { fn(b.getAttribute('data-v')); });
+    });
+  }
+  function setQuality(v) {
+    quality = v; store('apex-dusk.gfx', v);
+    paintSeg('gfxSeg', v);
+    $('gfxNote').textContent = Q[v].note;
+    $('gfx').textContent = 'Graphics: ' + Q[v].label;
+    if (applyQuality) applyQuality();
+  }
+  function onTilt(e) {
+    var a = (window.screen && screen.orientation && typeof screen.orientation.angle === 'number') ? screen.orientation.angle : (window.orientation || 0);
+    var raw = (a === 90) ? e.beta : (a === 270 || a === -90) ? -e.beta : e.gamma;
+    if (raw == null) return;
+    tilt.ok = true;
+    var v = Math.max(-1, Math.min(1, raw / 22));
+    tilt.v = Math.abs(v) < 0.06 ? 0 : v;
+  }
+  function enableTilt() {
+    function fail() {
+      if (ctrl !== 'tilt') return;
+      setCtrl('pad', true);
+      $('ctrlNote').textContent = 'Tilt is not available in this browser. Switched to Pad.';
+    }
+    function listen() {
+      if (!tilt.on) { window.addEventListener('deviceorientation', onTilt); tilt.on = true; }
+      setTimeout(function () { if (!tilt.ok) fail(); }, 1500);
+    }
+    try {
+      var D = window.DeviceOrientationEvent;
+      if (!D) { fail(); return; }
+      if (typeof D.requestPermission === 'function') {
+        D.requestPermission().then(function (r) { if (r === 'granted') listen(); else fail(); }).catch(fail);
+      } else listen();
+    } catch (e) { fail(); }
+  }
+  // quiet = set the layout without asking iOS for motion access (that needs a tap)
+  function setCtrl(v, quiet) {
+    ctrl = v; store('apex-dusk.ctrl', v);
+    paintSeg('ctrlSeg', v);
+    $('ctrlNote').textContent = CTRL_NOTE[v];
+    var cl = document.documentElement.classList;
+    cl.remove('ctl-pad'); cl.remove('ctl-arrows'); cl.remove('ctl-tilt');
+    cl.add('ctl-' + v);
+    if (v === 'tilt' && !quiet && !tilt.ok) enableTilt();
+  }
+  wireSeg('gfxSeg', setQuality);
+  wireSeg('ctrlSeg', function (v) { setCtrl(v, false); });
+  setQuality(quality);
+  setCtrl(ctrl, true);
+
+  // frame rate limit and on-screen counter
+  var FPS_OPTS = { '30': 30, '60': 60, 'max': 0 };
+  var FPS_NOTE = { '30': 'Saves battery and keeps phones cool.', '60': 'Smooth on most screens.', 'max': 'As fast as your screen allows. Uses more battery.' };
+  var fpsMode = recall('apex-dusk.fps'); if (!FPS_NOTE[fpsMode]) fpsMode = '60';
+  var fpsCap = FPS_OPTS[fpsMode];
+  var showFps = recall('apex-dusk.fpsshow') !== 'off';
+  function setFps(v) {
+    fpsMode = v; fpsCap = FPS_OPTS[v]; store('apex-dusk.fps', v);
+    paintSeg('fpsSeg', v);
+    $('fpsNote').textContent = FPS_NOTE[v];
+  }
+  function setShowFps(v) {
+    showFps = v === 'on'; store('apex-dusk.fpsshow', v);
+    paintSeg('fpsShowSeg', v);
+    $('fps').hidden = !showFps;
+  }
+  wireSeg('fpsSeg', setFps);
+  wireSeg('fpsShowSeg', setShowFps);
+  setFps(fpsMode);
+  setShowFps(showFps ? 'on' : 'off');
+
+  // game mode and rival difficulty
+  var MODE_NOTE = {
+    time: 'Just you and the clock. Best laps are saved.',
+    race: 'Three laps against three rivals. Fuel and tires last twice as long.'
+  };
+  var AI_LEVEL = {
+    easy:   { lat: 15, top: 0.82, note: 'Rivals brake early and leave room.' },
+    normal: { lat: 21, top: 0.90, note: 'A fair fight on most tracks.' },
+    hard:   { lat: 28, top: 0.97, note: 'Rivals carry real speed through corners.' }
+  };
+  var mode = recall('apex-dusk.mode'); if (!MODE_NOTE[mode]) mode = 'time';
+  var aiLevel = recall('apex-dusk.ai'); if (!AI_LEVEL[aiLevel]) aiLevel = 'normal';
+  function setMode(v) {
+    mode = v; store('apex-dusk.mode', v);
+    paintSeg('modeSeg', v);
+    $('modeNote').textContent = MODE_NOTE[v];
+    $('aiWrap').hidden = v !== 'race';
+    $('go').textContent = v === 'race' ? 'Start race' : 'Start engine';
+  }
+  function setAi(v) {
+    aiLevel = v; store('apex-dusk.ai', v);
+    paintSeg('aiSeg', v);
+    $('aiNote').textContent = AI_LEVEL[v].note;
+  }
+  wireSeg('modeSeg', setMode);
+  wireSeg('aiSeg', setAi);
+  setMode(mode);
+  setAi(aiLevel);
+  // iOS: stop pinch and double-tap zoom from stealing the thumbs
+  document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+  document.addEventListener('dblclick', function (e) { e.preventDefault(); });
 
   // ---------- tracks ----------
   // Each circuit starts with a straight heading +x at z = 0 and lies at z < 0,
@@ -614,7 +868,7 @@ window.__apexBoot = function () {
   var PAD_IN = -(W + K), PAD_OUT = -(W + K + PADW), BOXO = -(W + K + 9);
   var N = 0, LEN = 0, PX = [], PZ = [], TX = [], TZ = [];
   var P0 = 0, P1 = 0, PB = 0, BOX = { x: 0, z: 0, h: 0 };
-  var trackGroup = null;
+  var trackGroup = null, treeMeshes = [], treePlaced = 0, RAD = [];
 
   function sideX(i, o) { return PX[i] + TZ[i] * o; }
   function sideZ(i, o) { return PZ[i] - TX[i] * o; }
@@ -666,6 +920,14 @@ window.__apexBoot = function () {
       var a = pts[(i - 1 + N) % N], b = pts[(i + 1) % N];
       var dx = b.x - a.x, dz = b.z - a.z, l = Math.hypot(dx, dz) || 1;
       PX.push(pts[i].x); PZ.push(pts[i].z); TX.push(dx / l); TZ.push(dz / l);
+    }
+    // corner radius at every point, which the rivals use to pick their speed
+    RAD = [];
+    for (var ri = 0; ri < N; ri++) {
+      var ra = (ri - 5 + N) % N, rc = (ri + 5) % N;
+      var e1 = Math.hypot(PX[ri] - PX[ra], PZ[ri] - PZ[ra]), e2 = Math.hypot(PX[rc] - PX[ri], PZ[rc] - PZ[ri]), e3 = Math.hypot(PX[rc] - PX[ra], PZ[rc] - PZ[ra]);
+      var cr = Math.abs((PX[ri] - PX[ra]) * (PZ[rc] - PZ[ra]) - (PZ[ri] - PZ[ra]) * (PX[rc] - PX[ra]));
+      RAD.push(cr < 1e-6 ? 1e6 : e1 * e2 * e3 / (2 * cr));
     }
     var step = LEN / N;
     P0 = Math.round(15 / step); P1 = Math.round(115 / step); PB = Math.round(66 / step);
@@ -797,7 +1059,8 @@ window.__apexBoot = function () {
       leaves.setColorAt(placed, cl);
       placed++;
     }
-    trunks.count = leaves.count = placed;
+    treeMeshes = [trunks, leaves]; treePlaced = placed;
+    trunks.count = leaves.count = Math.min(placed, Q[quality].trees);
     G.add(trunks); G.add(leaves);
 
     scene.add(G);
@@ -881,6 +1144,43 @@ window.__apexBoot = function () {
     p.s.visible = true;
   }
 
+  // ---------- wind: streaks of air that rush past at speed, drifting on a light breeze ----------
+  var WIND_N = 90, BREEZE_X = 2.2, BREEZE_Z = -1.1;
+  var windPos = new Float32Array(WIND_N * 6), windP = [];
+  for (var wi = 0; wi < WIND_N; wi++) windP.push({ x: 1e6, y: 0, z: 1e6 });
+  var windGeo = new THREE.BufferGeometry();
+  windGeo.setAttribute('position', new THREE.BufferAttribute(windPos, 3));
+  var windMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, fog: false });
+  var windLines = new THREE.LineSegments(windGeo, windMat);
+  windLines.frustumCulled = false; windLines.visible = false;
+  scene.add(windLines);
+  function updateWind(dt, spd) {
+    var want = state === 'racing' ? clamp((spd - 14) / 30, 0, 1) * 0.4 : 0;
+    windMat.opacity += (want - windMat.opacity) * Math.min(1, dt * 6);
+    windLines.visible = windMat.opacity > 0.01;
+    if (!windLines.visible) return;
+    var s = Math.sin(car.h), c = Math.cos(car.h);
+    var dx = spd > 0.5 ? car.vx / spd : s, dz = spd > 0.5 ? car.vz / spd : c;
+    var len = 0.4 + spd * 0.045, n = Math.min(WIND_N, Q[quality].wind);
+    for (var i = 0; i < n; i++) {
+      var p = windP[i];
+      p.x += BREEZE_X * dt; p.z += BREEZE_Z * dt;
+      var ahead = (p.x - car.x) * s + (p.z - car.z) * c;
+      var side = (p.x - car.x) * c - (p.z - car.z) * s;
+      if (ahead < -12 || ahead > 80 || Math.abs(side) > 16) {
+        ahead = 25 + Math.random() * 50;
+        side = (Math.random() < 0.5 ? -1 : 1) * (1.8 + Math.random() * 12);
+        p.x = car.x + s * ahead + c * side; p.z = car.z + c * ahead - s * side;
+        p.y = 0.4 + Math.random() * 5;
+      }
+      var k = i * 6;
+      windPos[k] = p.x; windPos[k + 1] = p.y; windPos[k + 2] = p.z;
+      windPos[k + 3] = p.x + dx * len; windPos[k + 4] = p.y; windPos[k + 5] = p.z + dz * len;
+    }
+    windGeo.setDrawRange(0, n * 2);
+    windGeo.attributes.position.needsUpdate = true;
+  }
+
   // ---------- minimap ----------
   var map = $('map'), mctx = map.getContext('2d'), mapBase = null, MS = 1, MOX = 0, MOZ = 0, MSZ = 150;
   function mp(x, z) { return [MSZ / 2 - (x - MOX) * MS, MSZ / 2 - (z - MOZ) * MS]; } // +x lands left, like the chase view
@@ -911,6 +1211,11 @@ window.__apexBoot = function () {
     mctx.clearRect(0, 0, map.width, map.height);
     mctx.drawImage(mapBase, 0, 0);
     mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    rivals.forEach(function (r) {
+      var q = mp(r.x, r.z);
+      mctx.fillStyle = r.css; mctx.beginPath(); mctx.arc(q[0], q[1], 3.5, 0, 6.2832); mctx.fill();
+      mctx.strokeStyle = '#1c0f12'; mctx.lineWidth = 1; mctx.stroke();
+    });
     var p = mp(car.x, car.z);
     var hx = -Math.sin(car.h) * 9, hy = -Math.cos(car.h) * 9;
     var col = CARS[sel].css;
@@ -921,7 +1226,7 @@ window.__apexBoot = function () {
 
   // ---------- input: keyboard ----------
   var keys = Object.create(null);
-  var touch = { gas: false, brake: false, hand: false, steer: 0, stick: false };
+  var touch = { gas: false, brake: false, hand: false, left: false, right: false, steer: 0, stick: false };
   window.addEventListener('keydown', function (e) {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].indexOf(e.code) >= 0 && state !== 'menu') e.preventDefault();
     keys[e.code] = true;
@@ -932,8 +1237,8 @@ window.__apexBoot = function () {
   window.addEventListener('keyup', function (e) { keys[e.code] = false; });
   function releaseAll() {
     for (var k in keys) keys[k] = false;
-    touch.gas = touch.brake = touch.hand = touch.stick = false; touch.steer = 0;
-    $('knob').style.transform = '';
+    touch.gas = touch.brake = touch.hand = touch.left = touch.right = touch.stick = false; touch.steer = 0;
+    $('knob').style.transform = ''; $('stick').style.left = ''; $('stick').style.bottom = '';
     Array.prototype.forEach.call(document.querySelectorAll('.tbtn.on, .stick.on'), function (el) { el.classList.remove('on'); });
   }
   window.addEventListener('blur', releaseAll);
@@ -953,31 +1258,36 @@ window.__apexBoot = function () {
     el.addEventListener('contextmenu', function (e) { e.preventDefault(); });
   });
   (function () {
-    var stick = $('stick'), knob = $('knob'), pid = null, cx = 0;
+    // Floating pad: it re-centres under the thumb wherever the left side is touched
+    var zone = $('steerZone'), stick = $('stick'), knob = $('knob'), pid = null, cx = 0;
     function move(e) {
-      var v = Math.max(-1, Math.min(1, (e.clientX - cx) / 52));
+      var v = Math.max(-1, Math.min(1, (e.clientX - cx) / 54));
       touch.steer = v;
       knob.style.transform = 'translateX(' + (v * 40).toFixed(1) + 'px)';
-      stick.setAttribute('aria-valuenow', v.toFixed(2));
+      zone.setAttribute('aria-valuenow', v.toFixed(2));
     }
-    stick.addEventListener('pointerdown', function (e) {
+    zone.addEventListener('pointerdown', function (e) {
+      if (pid !== null) return;
       e.preventDefault();
       pid = e.pointerId;
-      try { stick.setPointerCapture(pid); } catch (x) {}
-      var r = stick.getBoundingClientRect(); cx = r.left + r.width / 2;
+      try { zone.setPointerCapture(pid); } catch (x) {}
+      cx = e.clientX;
+      stick.style.left = Math.max(8, e.clientX - 75) + 'px';
+      stick.style.bottom = Math.max(8, window.innerHeight - e.clientY - 60) + 'px';
       touch.stick = true; stick.classList.add('on');
       move(e);
     });
-    stick.addEventListener('pointermove', function (e) { if (e.pointerId === pid) move(e); });
+    zone.addEventListener('pointermove', function (e) { if (e.pointerId === pid) move(e); });
     function end(e) {
       if (e.pointerId !== pid) return;
       pid = null; touch.stick = false; touch.steer = 0;
-      knob.style.transform = ''; stick.classList.remove('on'); stick.setAttribute('aria-valuenow', '0');
+      knob.style.transform = ''; stick.style.left = ''; stick.style.bottom = '';
+      stick.classList.remove('on'); zone.setAttribute('aria-valuenow', '0');
     }
-    stick.addEventListener('pointerup', end);
-    stick.addEventListener('pointercancel', end);
-    stick.addEventListener('lostpointercapture', end);
-    stick.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    zone.addEventListener('pointerup', end);
+    zone.addEventListener('pointercancel', end);
+    zone.addEventListener('lostpointercapture', end);
+    zone.addEventListener('contextmenu', function (e) { e.preventDefault(); });
   })();
 
   function readInput() {
@@ -986,7 +1296,9 @@ window.__apexBoot = function () {
       up: !!(keys.ArrowUp || keys.KeyW || touch.gas),
       down: !!(keys.ArrowDown || keys.KeyS || touch.brake),
       hand: !!(keys.Space || touch.hand),
-      steer: touch.stick ? touch.steer : ks
+      steer: (isTouch && ctrl === 'tilt' && tilt.ok) ? tilt.v
+        : touch.stick ? touch.steer
+        : (((touch.right ? 1 : 0) - (touch.left ? 1 : 0)) || ks)
     };
   }
   var NO_INPUT = { up: false, down: false, hand: false, steer: 0 };
@@ -1000,7 +1312,14 @@ window.__apexBoot = function () {
       var o1 = ctx.createOscillator(), o2 = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
       o1.type = 'sawtooth'; o2.type = 'square'; f.type = 'lowpass'; f.frequency.value = 500; g.gain.value = 0;
       o1.connect(f); o2.connect(f); f.connect(g); g.connect(ctx.destination); o1.start(); o2.start();
-      audio = { ctx: ctx, o1: o1, o2: o2, f: f, g: g };
+      // wind: looped noise through a band-pass, louder and brighter with speed
+      var nb = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), nd = nb.getChannelData(0);
+      for (var ni = 0; ni < nd.length; ni++) nd[ni] = Math.random() * 2 - 1;
+      var ns = ctx.createBufferSource(); ns.buffer = nb; ns.loop = true;
+      var wf = ctx.createBiquadFilter(); wf.type = 'bandpass'; wf.frequency.value = 400; wf.Q.value = 0.6;
+      var wg = ctx.createGain(); wg.gain.value = 0;
+      ns.connect(wf); wf.connect(wg); wg.connect(ctx.destination); ns.start();
+      audio = { ctx: ctx, o1: o1, o2: o2, f: f, g: g, wf: wf, wg: wg };
     } catch (e) { audio = null; }
   }
   function updateAudio(v, thr) {
@@ -1011,9 +1330,15 @@ window.__apexBoot = function () {
     audio.f.frequency.setTargetAtTime(300 + rpm * 800 + (thr ? 450 : 0), t, 0.08);
     var on = !muted && state !== 'menu' && !pit.active && !(car.fuel <= 0 && v < 0.5);
     audio.g.gain.setTargetAtTime(on ? 0.03 + (thr ? 0.03 : 0) : 0, t, 0.08);
+    var ws = Math.min(1, v / 60);
+    audio.wf.frequency.setTargetAtTime(350 + ws * 900, t, 0.1);
+    audio.wg.gain.setTargetAtTime(!muted && state === 'racing' ? ws * ws * 0.07 : 0, t, 0.12);
   }
   function toggleMute() { muted = !muted; $('mute').textContent = muted ? 'Sound off' : 'Sound on'; }
   $('mute').addEventListener('click', toggleMute);
+  $('gfx').addEventListener('click', function () {
+    setQuality(quality === 'high' ? 'medium' : quality === 'medium' ? 'low' : 'high');
+  });
 
   // ---------- game state ----------
   var state = 'menu', cur = CARS[sel];
@@ -1041,10 +1366,149 @@ window.__apexBoot = function () {
     var n = nearest(car.x, car.z); placeAt(n.i);
   }
 
+  // ---------- race mode: three rivals that follow the circuit ----------
+  var LAPS = 3, rivals = [], raceOn = false, pProg = 0, raceLast = 0, raceLapShown = 1, racePos = 4, finished = null;
+  var RIVAL_LOOK = [
+    { name: 'Vex', color: 0xb86bff, css: '#b86bff' },
+    { name: 'Nova', color: 0xf1ece3, css: '#f1ece3' },
+    { name: 'Rook', color: 0x4f8cff, css: '#4f8cff' }
+  ];
+  function clearRivals() {
+    rivals.forEach(function (r) { scene.remove(r.obj.group); disposeGroup(r.obj.group); });
+    rivals = [];
+  }
+  function gridSlot(k) { return { i: N - 8 - 7 * k, off: (k % 2 ? 3 : -3) }; }
+  function rivalProg(r) { return r.lap * N + r.s; }
+  function poseRival(r) {
+    var i = Math.floor(r.s) % N, j = (i + 1) % N, f = r.s - Math.floor(r.s);
+    r.x = sideX(i, r.off) * (1 - f) + sideX(j, r.off) * f;
+    r.z = sideZ(i, r.off) * (1 - f) + sideZ(j, r.off) * f;
+    r.h = headingAt(i) + angDiff(headingAt(i), headingAt(j)) * f;
+    r.obj.group.position.set(r.x, 0, r.z);
+    r.obj.group.rotation.y = r.h;
+  }
+  function setupRace() {
+    clearRivals();
+    var lv = AI_LEVEL[aiLevel], step = LEN / N;
+    for (var k = 0; k < 3; k++) {
+      var base = CARS[(sel + 1 + k) % CARS.length], look = RIVAL_LOOK[k];
+      var def = {}; for (var key in base) def[key] = base[key];
+      def.color = look.color;
+      var skill = 1 - k * 0.035; // the rival on pole is the quickest
+      var top = base.maxV * lv.top * skill, lat = lv.lat * skill;
+      // target speed around the lap: corner limit, then brake early enough to reach it
+      var vt = new Float32Array(N);
+      for (var i = 0; i < N; i++) vt[i] = Math.min(top, Math.sqrt(lat * RAD[i]));
+      for (var pass = 0; pass < 2; pass++) {
+        for (var j = N - 1; j >= 0; j--) {
+          var nx = vt[(j + 1) % N], lim = Math.sqrt(nx * nx + 2 * 20 * step);
+          if (vt[j] > lim) vt[j] = lim;
+        }
+      }
+      var slot = gridSlot(k);
+      var r = { name: look.name, css: look.css, def: def, obj: makeCar(def), vt: vt, top: top,
+                s: slot.i, lap: -1, off: slot.off, lane: [-3.5, 0, 3.5][k], v: 0, x: 0, z: 0, h: 0, wheel: 0, finish: null };
+      scene.add(r.obj.group);
+      rivals.push(r);
+      poseRival(r);
+    }
+    var ps = gridSlot(3); // you start last
+    place(sideX(ps.i, ps.off), sideZ(ps.i, ps.off), headingAt(ps.i), ps.i);
+    pProg = ps.i - N; raceLast = ps.i; raceLapShown = 1; racePos = 4; finished = null;
+  }
+  function updateRivals(dt) {
+    var step = LEN / N;
+    var pLat = lateral(car.idx, car.x, car.z), pSpd = info.speed || 0;
+    rivals.forEach(function (r) {
+      var i = Math.floor(r.s) % N;
+      var target = r.vt[i];
+      if (r.finish != null) target = Math.min(target, 20);
+      var want = r.lane, myP = rivalProg(r);
+      // move over for a car close ahead, and do not drive into the back of it
+      function look(prog, lat, spd) {
+        var gap = (((prog - myP) * step) % LEN + LEN) % LEN;
+        if (gap > 16 || Math.abs(lat - r.off) > 2.6) return;
+        want = lat > 0 ? lat - 4.2 : lat + 4.2;
+        if (gap < 7 && Math.abs(lat - r.off) < 2.2 && spd < target) target = Math.max(spd, 3);
+      }
+      look(pProg, pLat, pSpd);
+      rivals.forEach(function (o) { if (o !== r) look(rivalProg(o), o.off, o.v); });
+      want = clamp(want, -5.5, 5.5);
+      r.off += clamp(want - r.off, -3.2 * dt, 3.2 * dt);
+
+      if (r.v < target) r.v = Math.min(target, r.v + r.def.accel * 0.8 * Math.max(0.15, 1 - r.v / (r.top * 1.05)) * dt);
+      else r.v = Math.max(target, r.v - 24 * dt);
+      r.s += r.v * dt / step;
+      if (r.s >= N) {
+        r.s -= N; r.lap++;
+        if (r.lap >= LAPS && r.finish == null) { r.finish = raceTime; if (finished) renderResult(); }
+      }
+      poseRival(r);
+      r.wheel += r.v * dt / 0.42;
+      r.obj.spins.forEach(function (w) { w.rotation.x = r.wheel; });
+
+      // contact with your car: push apart and share speed along the line between the two
+      var dx = car.x - r.x, dz = car.z - r.z, d = Math.hypot(dx, dz);
+      if (d < 2.5 && d > 0.001) {
+        var nx = dx / d, nz = dz / d, ov = 2.5 - d;
+        car.x += nx * ov * 0.8; car.z += nz * ov * 0.8;
+        var vn = car.vx * nx + car.vz * nz, rvn = (Math.sin(r.h) * nx + Math.cos(r.h) * nz) * r.v;
+        if (vn < rvn) { car.vx += nx * (rvn - vn) * 0.9; car.vz += nz * (rvn - vn) * 0.9; }
+        car.vx *= 0.985; car.vz *= 0.985;
+        r.v *= 0.97;
+        r.off = clamp(r.off - (nx * TZ[i] - nz * TX[i]) * ov * 0.4, -6, 6);
+      }
+    });
+  }
+  function renderResult() {
+    var rows = [{ name: 'You', me: true, t: finished.time, prog: 1e9 }];
+    rivals.forEach(function (r) { rows.push({ name: r.name, me: false, t: r.finish, prog: rivalProg(r) }); });
+    rows.sort(function (a, b) {
+      if (a.t != null && b.t != null) return a.t - b.t;
+      if (a.t != null) return -1;
+      if (b.t != null) return 1;
+      return b.prog - a.prog;
+    });
+    var ol = $('resList'); ol.textContent = '';
+    rows.forEach(function (row, k) {
+      var li = document.createElement('li');
+      if (row.me) li.className = 'me';
+      [String(k + 1), row.name, row.t != null ? fmt(row.t) : 'still racing'].forEach(function (txt) {
+        var sp = document.createElement('span'); sp.textContent = txt; li.appendChild(sp);
+      });
+      ol.appendChild(li);
+    });
+  }
+  function finishRace() {
+    state = 'finished';
+    finished = { pos: racePos, time: raceTime };
+    releaseAll();
+    $('resLabel').textContent = racePos === 1 ? 'You win' : 'Race finished';
+    var h = $('resPos'); h.textContent = 'P' + racePos;
+    var sm = document.createElement('small'); sm.textContent = 'of ' + (rivals.length + 1); h.appendChild(sm);
+    renderResult();
+    $('result').hidden = false;
+    $('pitPanel').hidden = true; pit.active = false;
+  }
+  $('again').addEventListener('click', function () { startRun(); });
+  $('resMenu').addEventListener('click', function () { toMenu(); });
+
   applyTheme(TRACKS[tsel].theme);
   buildTrack(TRACKS[tsel]);
   rebuildCar();
   placeOnGrid();
+  applyQuality = function () {
+    var q = Q[quality];
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, q.pr));
+    resize();
+    sunLight.castShadow = q.shadow > 0;
+    if (q.shadow > 0 && sunLight.shadow.mapSize.x !== q.shadow) {
+      sunLight.shadow.mapSize.set(q.shadow, q.shadow);
+      if (sunLight.shadow.map) { sunLight.shadow.map.dispose(); sunLight.shadow.map = null; }
+    }
+    treeMeshes.forEach(function (m) { m.count = Math.min(treePlaced, q.trees); });
+  };
+  applyQuality();
   onCarChange = function () { rebuildCar(); };
   onTrackChange = function () { applyTheme(TRACKS[tsel].theme); buildTrack(TRACKS[tsel]); placeOnGrid(); };
 
@@ -1052,20 +1516,26 @@ window.__apexBoot = function () {
     if (!audio) initAudio();
     if (audio && audio.ctx.state === 'suspended') { try { audio.ctx.resume(); } catch (e) {} }
     cur = CARS[sel];
+    if (isTouch && ctrl === 'tilt' && !tilt.ok) enableTilt(); // iOS grants motion access only from a tap
     $('intro').hidden = true; $('hud').hidden = false;
     buildMap();
-    placeOnGrid();
+    raceOn = mode === 'race';
+    if (raceOn) setupRace(); else { clearRivals(); placeOnGrid(); }
+    $('result').hidden = true;
+    $('bestRow').hidden = raceOn; $('pos').hidden = !raceOn;
     car.fuel = 100; car.tires = 100;
     pit.active = false; pit.cool = false; $('pitPanel').hidden = true;
     laps = 0; cps = [false, false, false, false]; raceTime = 0; lapStart = 0;
     state = 'countdown'; countT = 0; countShown = 4;
-    $('lapLabel').textContent = 'Lap 1';
+    $('lapLabel').textContent = raceOn ? 'Lap 1 / ' + LAPS : 'Lap 1';
     $('toast').classList.remove('show'); toastT = 0;
   }
   function toMenu() {
     state = 'menu'; releaseAll();
     $('hud').hidden = true; $('intro').hidden = false;
     pit.active = false;
+    clearRivals(); raceOn = false; finished = null;
+    $('result').hidden = true;
     placeOnGrid();
     try { $('go').focus(); } catch (e) {}
   }
@@ -1127,10 +1597,11 @@ window.__apexBoot = function () {
 
     if (state === 'racing') {
       var spf = clamp(Math.abs(vf) / d.maxV, 0, 1);
-      car.fuel = Math.max(0, car.fuel - d.burn * dt * (up ? 0.55 + 0.6 * spf : 0.04));
+      var econ = raceOn ? 0.5 : 1; // a race is three laps, so fuel and tires last twice as long
+      car.fuel = Math.max(0, car.fuel - d.burn * econ * dt * (up ? 0.55 + 0.6 * spf : 0.04));
       var slip = clamp(Math.abs(vr) / 8, 0, 1);
       var moving = Math.abs(vf) > 5;
-      car.tires = Math.max(0, car.tires - d.wear * dt * (0.35 * spf + 1.5 * slip + (inp.hand && moving ? 0.8 : 0) + (off && moving ? 0.5 : 0)));
+      car.tires = Math.max(0, car.tires - d.wear * econ * dt * (0.35 * spf + 1.5 * slip + (inp.hand && moving ? 0.8 : 0) + (off && moving ? 0.5 : 0)));
     }
     return { vf: vf, vr: vr, off: off, speed: Math.hypot(car.vx, car.vz) };
   }
@@ -1153,7 +1624,7 @@ window.__apexBoot = function () {
         if (shown === 0) { state = 'racing'; raceTime = 0; lapStart = 0; }
       }
     }
-    if (state === 'racing') raceTime += dt;
+    if (state === 'racing' || state === 'finished') raceTime += dt;
 
     if (state === 'menu') { info.speed = 0; info.vf = 0; info.vr = 0; menuAngle += dt * 0.25; }
     else info = physics(dt, inp);
@@ -1176,8 +1647,27 @@ window.__apexBoot = function () {
       if (pit.cool && bd > 5) pit.cool = false;
     }
 
-    // lap logic
-    if (state === 'racing') {
+    // race: rivals, your progress, position and the finish
+    if (raceOn && (state === 'racing' || state === 'finished')) {
+      updateRivals(dt);
+      if (state === 'racing') {
+        var dI = car.idx - raceLast;
+        if (dI > N / 2) dI -= N; else if (dI < -N / 2) dI += N;
+        pProg += dI; raceLast = car.idx;
+        racePos = 1;
+        rivals.forEach(function (r) { if (r.finish != null || rivalProg(r) > pProg) racePos++; });
+        var lapNow = clamp(Math.floor(pProg / N) + 1, 1, LAPS);
+        if (lapNow > raceLapShown) {
+          raceLapShown = lapNow;
+          $('lapLabel').textContent = 'Lap ' + lapNow + ' / ' + LAPS;
+          toast(lapNow === LAPS ? 'Final lap' : 'Lap ' + lapNow + ' / ' + LAPS, '');
+        }
+        if (pProg >= LAPS * N) finishRace();
+      }
+    }
+
+    // lap logic (time attack)
+    if (state === 'racing' && !raceOn) {
       var i = car.idx;
       for (var k = 1; k <= 3; k++) if (i >= N * k / 4 && i < N * k / 4 + N * 0.1) cps[k] = true;
       if (lastIdx > N * 0.85 && i < N * 0.15 && cps[1] && cps[2] && cps[3]) completeLap();
@@ -1196,7 +1686,7 @@ window.__apexBoot = function () {
     if (state === 'racing') {
       var slide = Math.abs(info.vr) > 3.5 || (inp.hand && spd > 8);
       smokeT -= dt;
-      if ((slide || (info.off && spd > 10)) && smokeT <= 0) {
+      if (Q[quality].smoke && (slide || (info.off && spd > 10)) && smokeT <= 0) {
         smokeT = 0.035;
         var s = Math.sin(car.h), c = Math.cos(car.h), back = cur.len / 2 - 0.6;
         [-1, 1].forEach(function (side) {
@@ -1213,6 +1703,8 @@ window.__apexBoot = function () {
       var scl = 1.2 + t * 3.6; p.s.scale.set(scl, scl, 1);
       p.s.material.opacity = 0.38 * (1 - t);
     });
+
+    updateWind(dt, spd);
 
     sunLight.position.set(car.x + lightDir.x * 90, lightDir.y * 90, car.z + lightDir.z * 90);
     sunLight.target.position.set(car.x, 0, car.z);
@@ -1244,7 +1736,13 @@ window.__apexBoot = function () {
     if (!$('hud').hidden) {
       $('speed').textContent = Math.round(spd * 3.6);
       $('speedBar').style.width = (spf * 100).toFixed(1) + '%';
-      $('lapTime').textContent = fmt(state === 'racing' ? raceTime - lapStart : 0);
+      if (raceOn) {
+        $('lapTime').textContent = fmt(finished ? finished.time : state === 'racing' ? raceTime : 0);
+        var pe = $('pos'), ptxt = 'P' + (finished ? finished.pos : racePos);
+        if (pe.firstChild && pe.firstChild.nodeValue !== ptxt) pe.firstChild.nodeValue = ptxt;
+      } else {
+        $('lapTime').textContent = fmt(state === 'racing' ? raceTime - lapStart : 0);
+      }
       var fb = $('fuelBar'), tb = $('tireBar');
       fb.style.width = car.fuel.toFixed(1) + '%'; fb.setAttribute('data-level', level(car.fuel, 30, 15));
       tb.style.width = car.tires.toFixed(1) + '%'; tb.setAttribute('data-level', level(car.tires, 45, 25));
@@ -1267,11 +1765,24 @@ window.__apexBoot = function () {
   window.addEventListener('resize', resize);
   resize();
 
-  var last = performance.now();
+  var last = performance.now(), fpsT = 0, fpsN = 0, fpsHinted = false, shT = 0, shN = 0;
   function frame(now) {
     requestAnimationFrame(frame);
+    // frame limit: skip this screen refresh until enough time has passed
+    if (fpsCap && now - last < 1000 / fpsCap - 1.5) return;
     var dt = (now - last) / 1000; last = now;
     if (!(dt > 0)) return;
+    shT += dt; shN++;
+    if (shT >= 0.5) { if (showFps) $('fps').textContent = Math.round(shN / shT) + ' FPS'; shT = 0; shN = 0; }
+    // one hint if the frame rate stays low while racing
+    fpsT += dt; fpsN++;
+    if (fpsT >= 4) {
+      if (!fpsHinted && state === 'racing' && quality !== 'low' && dt < 0.5 && fpsN / fpsT < (fpsCap ? Math.min(28, fpsCap * 0.8) : 28)) {
+        fpsHinted = true;
+        toast('Low frame rate', 'Tap the Graphics button to lower detail');
+      }
+      fpsT = 0; fpsN = 0;
+    }
     if (dt > 0.05) dt = 0.05;
     update(dt);
     renderer.render(scene, camera);
