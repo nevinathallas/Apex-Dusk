@@ -469,6 +469,7 @@
       <nav class="menu" aria-label="Main menu">
         <button class="menu-btn" id="m-time" type="button" disabled>Time attack<small>You against the clock. Best laps are saved.</small></button>
         <button class="menu-btn" id="m-race" type="button" disabled>Race<small>Three laps against three AI rivals.</small></button>
+        <button class="menu-btn" id="m-party" type="button" disabled>Dusk Party<small>Three laps with a different chaos rule every lap.</small></button>
         <button class="menu-btn" id="m-online" type="button" disabled>Online race<small>Up to 4 players with a room code.</small></button>
         <button class="menu-btn minor" id="m-settings" type="button">Settings</button>
         <button class="menu-btn minor" id="m-help" type="button">How to play</button>
@@ -569,7 +570,7 @@
         <div><h2>How to play</h2></div>
       </div>
       <p class="howto">Low on fuel or tires? Drive into the <b>yellow pit box</b> beside the start straight and stop. The crew refuels you and fits new tires while the clock keeps running.</p>
-      <p class="howto">In <b>Race</b> and <b>Online race</b> you run three laps, and fuel and tires last twice as long.</p>
+      <p class="howto">In <b>Race</b>, <b>Dusk Party</b> and <b>Online race</b> you run three laps, and fuel and tires last twice as long. Dusk Party adds a random modifier at the start of each lap.</p>
       <dl class="controls">
         <dt>W / &uarr;</dt><dd>Throttle</dd>
         <dt>S / &darr;</dt><dd>Brake, then reverse</dd>
@@ -653,7 +654,7 @@ window.__apexBoot = function () {
     document.documentElement.classList.add('is-touch');
     Array.prototype.forEach.call(document.querySelectorAll('.kb'), function (el) { el.textContent = '↺'; });
   }
-  var PLAY_BTNS = ['m-time', 'm-race', 'm-online'];
+  var PLAY_BTNS = ['m-time', 'm-race', 'm-party', 'm-online'];
   function showError(text) {
     var el = $('errmsg'); el.textContent = text; el.hidden = false;
     PLAY_BTNS.forEach(function (id) { $(id).disabled = true; });
@@ -775,7 +776,7 @@ window.__apexBoot = function () {
     normal: { lat: 21, top: 0.90, note: 'A fair fight on most tracks.' },
     hard:   { lat: 28, top: 0.97, note: 'Rivals carry real speed through corners.' }
   };
-  var mode = 'time'; // 'time', 'race' or 'online'
+  var mode = 'time'; // 'time', 'race', 'party' or 'online'
   var aiLevel = recall('apex-dusk.ai'); if (!AI_LEVEL[aiLevel]) aiLevel = 'normal';
   function setAi(v) {
     aiLevel = v; store('apex-dusk.ai', v);
@@ -1556,6 +1557,18 @@ window.__apexBoot = function () {
 
   // ---------- race mode: three rivals that follow the circuit ----------
   var LAPS = 3, rivals = [], raceOn = false, pProg = 0, raceLast = 0, raceLapShown = 1, racePos = 4, finished = null;
+  var partyEvent = null;
+  var PARTY_EVENTS = [
+    { id: 'turbo', name: 'Turbo lap', note: 'Everyone gets extra speed.' },
+    { id: 'slick', name: 'Slick lap', note: 'Grip is reduced. Smooth inputs win.' },
+    { id: 'fuel', name: 'Fuel saver lap', note: 'Fuel burn is reduced. Push harder.' }
+  ];
+  function setPartyEvent(lap, announce) {
+    if (mode !== 'party') { partyEvent = null; return; }
+    var choices = PARTY_EVENTS.filter(function (e) { return !partyEvent || e.id !== partyEvent.id; });
+    partyEvent = choices[Math.floor(Math.random() * choices.length)];
+    if (announce) toast('PARTY: ' + partyEvent.name, partyEvent.note);
+  }
   var RIVAL_LOOK = [
     { name: 'Vex', color: 0xb86bff, css: '#b86bff' },
     { name: 'Nova', color: 0xf1ece3, css: '#f1ece3' },
@@ -1612,6 +1625,10 @@ window.__apexBoot = function () {
     rivals.forEach(function (r) {
       var i = Math.floor(r.s) % N;
       var target = r.vt[i];
+      if (mode === 'party' && partyEvent) {
+        if (partyEvent.id === 'turbo') target *= 1.12;
+        else if (partyEvent.id === 'slick') target *= 0.9;
+      }
       if (r.finish != null) target = Math.min(target, 20);
       var want = r.lane, myP = rivalProg(r);
       // move over for a car close ahead, and do not drive into the back of it
@@ -1705,7 +1722,7 @@ window.__apexBoot = function () {
 
   // ---------- menu screens ----------
   var SCREENS = ['main', 'track', 'car', 'settings', 'help', 'online', 'lobby'];
-  var MODE_NAME = { time: 'Time attack', race: 'Race' };
+  var MODE_NAME = { time: 'Time attack', race: 'Race', party: 'Dusk Party' };
   var screenNow = 'main', paused = false;
   function show(name) {
     screenNow = name;
@@ -1715,10 +1732,10 @@ window.__apexBoot = function () {
   }
   function chooseMode(v) {
     mode = v;
-    $('aiWrap').hidden = v !== 'race';
+    $('aiWrap').hidden = v !== 'race' && v !== 'party';
     $('trackStep').textContent = MODE_NAME[v] + ' · Step 1 of 2';
     $('carStep').textContent = MODE_NAME[v] + ' · Step 2 of 2';
-    $('go').textContent = v === 'race' ? 'Start race' : 'Start engine';
+    $('go').textContent = v === 'race' || v === 'party' ? 'Start race' : 'Start engine';
     $('bestWrap').hidden = v !== 'time';
     show('track');
   }
@@ -1730,6 +1747,7 @@ window.__apexBoot = function () {
   }
   $('m-time').addEventListener('click', function () { chooseMode('time'); });
   $('m-race').addEventListener('click', function () { chooseMode('race'); });
+  $('m-party').addEventListener('click', function () { chooseMode('party'); });
   $('m-online').addEventListener('click', function () { netMsg(''); show('online'); });
   $('m-settings').addEventListener('click', function () { show('settings'); });
   $('m-help').addEventListener('click', function () { show('help'); });
@@ -1755,6 +1773,8 @@ window.__apexBoot = function () {
     car.fuel = 100; car.tires = 100;
     pit.active = false; pit.cool = false; $('pitPanel').hidden = true;
     laps = 0; cps = [false, false, false, false]; raceTime = 0; lapStart = 0;
+    partyEvent = null;
+    setPartyEvent(1, false);
     state = 'countdown'; countT = 0; countShown = 4;
     $('lapLabel').textContent = raceOn ? 'Lap 1 / ' + LAPS : 'Lap 1';
     $('toast').classList.remove('show'); toastT = 0;
@@ -2221,17 +2241,19 @@ window.__apexBoot = function () {
     var inPad = n.i >= P0 && n.i <= P1 && lat <= PAD_IN + 0.6 && lat >= PAD_OUT;
     var off = n.d > W + K + 0.4 && !inPad;
     var tire = car.tires / 100;
-    var maxV = (off ? 26 : d.maxV) * (0.9 + 0.1 * tire);
+    var partySpeed = mode === 'party' && partyEvent && partyEvent.id === 'turbo' ? 1.12 : 1;
+    var maxV = (off ? 26 : d.maxV) * (0.9 + 0.1 * tire) * partySpeed;
     var up = inp.up && car.fuel > 0;
 
-    if (up) vf += d.accel * Math.max(0, 1 - Math.pow(Math.max(vf, 0) / maxV, 1.6)) * dt;
+    if (up) vf += d.accel * partySpeed * Math.max(0, 1 - Math.pow(Math.max(vf, 0) / maxV, 1.6)) * dt;
     if (inp.down) { if (vf > 0.5) vf -= 40 * dt; else vf = Math.max(vf - 13 * dt, -12); }
     if (!up && !inp.down) vf -= Math.sign(vf) * Math.min(Math.abs(vf), 3 * dt);
     vf -= (vf * 0.05 + Math.sign(vf) * 0.0012 * vf * vf) * dt;
     if (off) vf -= vf * 1.1 * dt;
     if (inp.hand) vf -= vf * 0.5 * dt;
 
-    var grip = inp.hand ? 1.6 : (off ? 4 : d.grip * (0.45 + 0.55 * tire));
+    var partyGrip = mode === 'party' && partyEvent && partyEvent.id === 'slick' ? 0.62 : 1;
+    var grip = inp.hand ? 1.6 : (off ? 4 : d.grip * (0.45 + 0.55 * tire) * partyGrip);
     vr *= Math.exp(-grip * dt);
 
     var target = clamp(inp.steer, -1, 1);
@@ -2246,6 +2268,7 @@ window.__apexBoot = function () {
     if (state === 'racing') {
       var spf = clamp(Math.abs(vf) / d.maxV, 0, 1);
       var econ = raceOn ? 0.5 : 1; // a race is three laps, so fuel and tires last twice as long
+      if (mode === 'party' && partyEvent && partyEvent.id === 'fuel') econ *= 0.55;
       car.fuel = Math.max(0, car.fuel - d.burn * econ * dt * (up ? 0.55 + 0.6 * spf : 0.04));
       var slip = clamp(Math.abs(vr) / 8, 0, 1);
       var moving = Math.abs(vf) > 5;
@@ -2269,7 +2292,10 @@ window.__apexBoot = function () {
         countShown = shown;
         var el = $('count'); el.textContent = shown === 0 ? 'GO' : String(shown);
         el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
-        if (shown === 0) { state = 'racing'; raceTime = 0; lapStart = 0; }
+        if (shown === 0) {
+          state = 'racing'; raceTime = 0; lapStart = 0;
+          if (mode === 'party') toast('PARTY: ' + partyEvent.name, partyEvent.note);
+        }
       }
     }
     if (state === 'racing' || state === 'finished') raceTime += dt;
@@ -2308,7 +2334,8 @@ window.__apexBoot = function () {
         if (lapNow > raceLapShown) {
           raceLapShown = lapNow;
           $('lapLabel').textContent = 'Lap ' + lapNow + ' / ' + LAPS;
-          toast(lapNow === LAPS ? 'Final lap' : 'Lap ' + lapNow + ' / ' + LAPS, '');
+          if (mode === 'party') setPartyEvent(lapNow, true);
+          else toast(lapNow === LAPS ? 'Final lap' : 'Lap ' + lapNow + ' / ' + LAPS, '');
         }
         if (pProg >= LAPS * N) finishRace();
       }
